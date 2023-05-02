@@ -34,3 +34,8 @@ prepare_conan:
 	rm -rf build
 	mkdir build
 	cd build && conan install .. $(CONAN_FLAGS)
+
+backup:
+	cd ../
+	rsync -avz MenteeRoot ~/backup
+

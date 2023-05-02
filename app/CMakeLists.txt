@@ -2,10 +2,15 @@ set(APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
 
 add_executable(${EXECUTABLE_NAME} ${APP_SOURCES})
 
+# todon, why is not handled by Fetchcontent?
+#target_include_directories(${EXECUTABLE_NAME} PRIVATE ${yaml-cpp_SOURCE_DIR}/include)
+
 target_link_libraries(
     ${EXECUTABLE_NAME}
     PUBLIC ${LIBRARY_NAME}
+           ${YAML_LIBRARY_NAME}
            nlohmann_json::nlohmann_json
+           yaml-cpp
            fmt::fmt
            spdlog::spdlog
            cxxopts::cxxopts)

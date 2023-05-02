@@ -1,0 +1,19 @@
+net_function_1:
+  target_motors: [ 1, 2 ]
+  times: 4
+  delta_in_milliseconds: 200
+  values: [ 0.5, 0.4 ]
+  delta_values: [-0.01, 0.02]
+  
+net_function_2:
+  target_motors: [3]
+  times: 0
+  delta_in_milliseconds: 1000
+  values: [ 0.5, 0.4, 0.3, 0.6 ]
+
+# construction_cone_2:
+#  model: construction_cone
+#  model_type: sdf
+#  position: [ 3.0, 7.0, 0.0 ]
+#  orientation: [ 0.0, 0.0, 0 ]
+ 

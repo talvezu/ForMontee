@@ -93,6 +93,10 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "csignal": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "cfenv": "cpp"
     }
 }

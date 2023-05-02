@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <yaml-cpp/yaml.h>
+//#include <yaml.h>
 #include <cxxopts.hpp>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -11,12 +13,17 @@
 
 #include "config.hpp"
 #include "my_lib.h"
+#include "yaml_api.h"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
+using YAML::Parser;
+
 int main(int argc, char **argv)
 {
+    Parser parser;
+
     std::cout << "JSON: " << NLOHMANN_JSON_VERSION_MAJOR << "."
               << NLOHMANN_JSON_VERSION_MINOR << "."
               << NLOHMANN_JSON_VERSION_PATCH << '\n';

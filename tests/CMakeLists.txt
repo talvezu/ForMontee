@@ -2,10 +2,20 @@ if(ENABLE_TESTING)
     set(TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
     set(TEST_HEADERS "")
 
+    set(GTEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gtest_yaml_api.cpp")
+    set(GTEST_HEADERS "")
+
     add_executable(${UNIT_TEST_NAME} ${TEST_SOURCES} ${TEST_HEADERS})
+    add_executable(${UNIT_GTEST_NAME} ${GTEST_SOURCES} ${GTEST_HEADERS})
 
     target_link_libraries(${UNIT_TEST_NAME} PUBLIC ${LIBRARY_NAME})
     target_link_libraries(${UNIT_TEST_NAME} PRIVATE Catch2::Catch2)
+
+    target_include_directories(${UNIT_GTEST_NAME} PUBLIC ${GTEST_INCLUDE_DIR} ${YAML_LIBRARY_INCLUDES})
+    target_link_libraries(${UNIT_GTEST_NAME} PUBLIC ${LIBRARY_NAME} yaml-cpp ${YAML_LIBRARY_NAME})
+    target_link_libraries(${UNIT_GTEST_NAME} PRIVATE  GTest::gtest_main)
+
+    #gtest_discover_tests(${UNIT_GTEST_NAME})
 
     target_set_warnings(
         TARGET
@@ -15,8 +25,18 @@ if(ENABLE_TESTING)
         AS_ERRORS
         ${ENABLE_WARNINGS_AS_ERRORS})
 
-    add_linter_tool_to_target(${UNIT_TEST_NAME})
+    target_set_warnings(
+        TARGET
+        ${UNIT_GTEST_NAME}
+        ENABLE
+        ${ENABLE_WARNINGS}
+        AS_ERRORS
+        ${ENABLE_WARNINGS_AS_ERRORS})
 
+    add_linter_tool_to_target(${UNIT_TEST_NAME})
+    add_linter_tool_to_target(${UNIT_GTEST_NAME})
+
+    # skip for now for gtest
     if(ENABLE_COVERAGE)
         set(COVERAGE_MAIN "coverage")
         set(COVERAGE_EXCLUDES
