@@ -10,19 +10,26 @@
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
-
+#include "PeriodicTask.h"
 #include "config.hpp"
 #include "my_lib.h"
 #include "yaml_api.h"
+#include "TasksFromConfig.h"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
 using YAML::Parser;
-
 int main(int argc, char **argv)
 {
-    Parser parser;
+
+    //Parser parser;
+    workflow<float> f("text.yaml");
+    f.init();
+    tasks_from_config(f);
+
+   	//std::this_thread::sleep_for(10000ms);
+	//end_task.store(true);
 
     std::cout << "JSON: " << NLOHMANN_JSON_VERSION_MAJOR << "."
               << NLOHMANN_JSON_VERSION_MINOR << "."

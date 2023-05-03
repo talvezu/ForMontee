@@ -89,11 +89,30 @@ bool workflow<T>::load_work()
                 std::move(delta_values)
                 );
         std::cout<<*tasks[key].get();
+
+
+        task_count += s.size();
         continue;
 
         //Point3f pos;
     }
     return true;
+}
+
+template <typename T>
+std::shared_ptr<FunctionTask<T>> workflow<T>::get_task_by_name(std::string name)
+{
+    auto it = tasks.find(name);
+    if ( it == tasks.end())
+        return std::shared_ptr<FunctionTask<T>>();
+    else
+        return it->second;
+}
+
+template <typename T>
+uint8_t workflow<T>::get_engines_count()
+{
+    return static_cast<uint8_t> (task_count);
 }
 
 template class workflow<float>;

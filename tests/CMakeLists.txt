@@ -2,7 +2,8 @@ if(ENABLE_TESTING)
     set(TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
     set(TEST_HEADERS "")
 
-    set(GTEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gtest_yaml_api.cpp")
+    set(GTEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gtest_yaml_api.cpp"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_priority_queue.cpp")
     set(GTEST_HEADERS "")
 
     add_executable(${UNIT_TEST_NAME} ${TEST_SOURCES} ${TEST_HEADERS})
@@ -11,7 +12,9 @@ if(ENABLE_TESTING)
     target_link_libraries(${UNIT_TEST_NAME} PUBLIC ${LIBRARY_NAME})
     target_link_libraries(${UNIT_TEST_NAME} PRIVATE Catch2::Catch2)
 
-    target_include_directories(${UNIT_GTEST_NAME} PUBLIC ${GTEST_INCLUDE_DIR} ${YAML_LIBRARY_INCLUDES})
+    #workaround
+    set(UTILS_DIRECTORY_INCLUDES "../app/utils")
+    target_include_directories(${UNIT_GTEST_NAME} PUBLIC ${GTEST_INCLUDE_DIR} ${YAML_LIBRARY_INCLUDES} ${UTILS_DIRECTORY_INCLUDES})
     target_link_libraries(${UNIT_GTEST_NAME} PUBLIC ${LIBRARY_NAME} yaml-cpp ${YAML_LIBRARY_NAME})
     target_link_libraries(${UNIT_GTEST_NAME} PRIVATE  GTest::gtest_main)
 

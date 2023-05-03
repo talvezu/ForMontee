@@ -4,7 +4,7 @@
 
 TEST(YamlTests, YamlPrintFromFile)
 {
-    workflow<float> f("text.yaml");
+    workflow<float> f("../tests/text.yaml");
     f.init();
     ASSERT_EQ (static_cast<int>(f.load_work()), 1);
 }

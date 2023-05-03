@@ -64,13 +64,18 @@ class workflow{
     std::set<int> motors;
     YAML::Node config;
     std::map<std::string, std::shared_ptr<FunctionTask<T>>> tasks;
+    uint16_t task_count;
 public:
     workflow(std::string _filename):filename(_filename)
     {
+        task_count = 0;
     }
     bool init();
 
     bool load_work();
+
+    std::shared_ptr<FunctionTask<T>> get_task_by_name(std::string name);
+    uint8_t get_engines_count();
 };
 
 

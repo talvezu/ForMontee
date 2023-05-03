@@ -1,7 +1,15 @@
-set(APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
+set(APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc" "${CMAKE_CURRENT_SOURCE_DIR}/TasksFromConfig.cpp")
+set(APP_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/TasksFromConfig.h")
 
-add_executable(${EXECUTABLE_NAME} ${APP_SOURCES})
+set(UTILS_DIRECTORY_INCLUDES "./"
+                             "${CMAKE_BINARY_DIR}/configured_files/include"
+                             "${CMAKE_CURRENT_SOURCE_DIR}/utils")
 
+add_subdirectory(utils)
+
+add_executable(${EXECUTABLE_NAME} ${APP_SOURCES} ${APP_HEADERS} ${UTILS_SOURCES} ${UTILS_HEADERS})
+
+target_include_directories(${EXECUTABLE_NAME} PUBLIC ${UTILS_DIRECTORY_INCLUDES})
 # todon, why is not handled by Fetchcontent?
 #target_include_directories(${EXECUTABLE_NAME} PRIVATE ${yaml-cpp_SOURCE_DIR}/include)
 
