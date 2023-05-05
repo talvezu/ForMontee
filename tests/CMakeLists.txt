@@ -1,9 +1,11 @@
 if(ENABLE_TESTING)
+    set(CMAKE_CXX_FLAGS  -Wfatal-errors)
     set(TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
     set(TEST_HEADERS "")
 
     set(GTEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gtest_yaml_api.cpp"
-                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_priority_queue.cpp")
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_priority_queue.cpp"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_scheduled_task.cpp")
     set(GTEST_HEADERS "")
 
     add_executable(${UNIT_TEST_NAME} ${TEST_SOURCES} ${TEST_HEADERS})
