@@ -24,9 +24,10 @@ int main(int argc, char **argv)
 {
 
     //Parser parser;
-    workflow<float> f("text.yaml");
+    workflow<float> f("../configured/tasks.yaml");
     f.init();
     tasks_from_config(f);
+
 
    	//std::this_thread::sleep_for(10000ms);
 	//end_task.store(true);
@@ -46,7 +47,7 @@ int main(int argc, char **argv)
     std::int32_t i = 0;
 
     // Adress Sanitizer should see this
-    int *x = new int[42];
+    //int *x = new int[42];
 
     const auto welcome_message =
         fmt::format("Welcome to {} v{}\n", project_name, project_version);

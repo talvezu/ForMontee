@@ -8,8 +8,22 @@
 
 using YAML::Parser;
 
+struct netAction{
+    std::set<std::string> motors; //unused
+    uint32_t times; //unused
+    std::string action;
+    netAction(std::set<std::string> &&_motors, uint32_t _times, std::string _action):
+        motors(_motors),
+        times(_times),
+        action(_action)
+    {
+
+    }
+};
+
 template<class T>
 class FunctionTask{
+public:
     std::string task_name;
     std::set<uint32_t> target_motors;
     uint32_t times;
@@ -17,7 +31,6 @@ class FunctionTask{
     std::optional<std::vector<T>> values;
     std::optional<std::vector<T>> delta_values;
     bool is_infinite;
-public:
     FunctionTask(std::string _name,
                  std::set<uint32_t> &&_target_motors,
                  uint32_t _times,
@@ -58,13 +71,17 @@ public:
     }
 };
 
+
 template <class T>
 class workflow{
     std::string filename;
     std::set<int> motors;
     YAML::Node config;
     std::map<std::string, std::shared_ptr<FunctionTask<T>>> tasks;
+    std::map<std::string, netAction> net_actions;
     uint16_t task_count;
+
+    void constract_net_action(const std::string key, const YAML::Node &attr);
 public:
     workflow(std::string _filename):filename(_filename)
     {
@@ -76,6 +93,12 @@ public:
 
     std::shared_ptr<FunctionTask<T>> get_task_by_name(std::string name);
     uint8_t get_engines_count();
-};
+    const auto &get_tasks(){
+        return tasks;
+    }
 
+    const auto &get_net_actions(){
+        return net_actions;
+    }
+};
 

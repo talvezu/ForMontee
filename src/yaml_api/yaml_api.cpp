@@ -2,6 +2,7 @@
 #include <set>
 #include <optional>
 #include <yaml-cpp/yaml.h>
+#include <re2/re2.h>
 #include "yaml_api.h"
 #include "point.h" //todon convert 1d to 3d using point
 
@@ -45,11 +46,45 @@ bool workflow<T>::init()
 }
 
 template <typename T>
+void workflow<T>::constract_net_action(const std::string key,const YAML::Node &attr)
+{
+    std::set<std::string> motors;
+    for (auto item: attr["target_motors"])
+    {
+        motors.insert("motor_" + item.as<std::string>());
+    };
+
+    net_actions.emplace(key, netAction(std::move(motors),
+                                       attr["times"].as<uint32_t>(),
+                                       attr["action"].as<std::string>()));
+
+}
+
+/*
+//overkill, for fun.
+bool partialmatch_for_net_action_re(const std::string &str){
+  re2::StringPiece input(str);
+  re2::RE2 re(".*");
+  std::string t,s;
+  if(re2::RE2::PartialMatch(input, re , &s, &t))
+  {
+    std::cout << "s:"<< s << " t:"<< t << "\n";
+    return true;
+  }
+  return false;
+}
+*/
+template <typename T>
 bool workflow<T>::load_work()
 {
     for(YAML::const_iterator it=config.begin(); it!=config.end(); ++it){
         const std::string &key=it->first.as<std::string>();
         std::cout<<key<<"\n";
+        if (key.find("net_action") != std::string::npos)
+        {
+            constract_net_action(key, it->second);
+            continue;
+        }
         //auto obj = it->second.as<YAML::Node<FunctionTask<float>>>();
         YAML::Node attr = it->second;
         std::set<uint32_t> s;

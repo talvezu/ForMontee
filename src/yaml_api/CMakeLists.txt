@@ -9,6 +9,7 @@ target_include_directories(${YAML_LIBRARY_NAME} PUBLIC ${YAML_LIBRARY_INCLUDES})
 target_link_libraries(
     ${YAML_LIBRARY_NAME}
     PRIVATE yaml-cpp
+            re2
             nlohmann_json::nlohmann_json
             fmt::fmt
             spdlog::spdlog

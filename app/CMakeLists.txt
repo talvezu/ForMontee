@@ -1,5 +1,5 @@
 set(APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cc" "${CMAKE_CURRENT_SOURCE_DIR}/TasksFromConfig.cpp")
-set(APP_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/TasksFromConfig.h")
+set(APP_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/TasksFromConfig.h" "${CMAKE_CURRENT_SOURCE_DIR}/InteractiveTask.h")
 
 set(UTILS_DIRECTORY_INCLUDES "./"
                              "${CMAKE_BINARY_DIR}/configured_files/include"
@@ -18,6 +18,7 @@ target_link_libraries(
     PUBLIC ${LIBRARY_NAME}
            ${YAML_LIBRARY_NAME}
            nlohmann_json::nlohmann_json
+           re2
            yaml-cpp
            fmt::fmt
            spdlog::spdlog

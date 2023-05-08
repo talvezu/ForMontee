@@ -1,0 +1,12 @@
+construction_cone_1:
+  model: construction_cone
+  model_type: sdf
+  position: [ 1.2, 3.4, 0.0 ]
+  orientation: [ 0.0, 0.0, 0 ]
+  
+construction_cone_2:
+  model: construction_cone
+  model_type: sdf
+  position: [ 3.0, 7.0, 0.0 ]
+  orientation: [ 0.0, 0.0, 0 ]
+ 

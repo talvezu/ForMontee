@@ -75,6 +75,7 @@ endif()
 if(USE_CONAN)
     message("==> Using Conan")
     include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+    find_package(re2)
     find_package(yaml-cpp)
     find_package(nlohmann_json)
     find_package(fmt)
@@ -84,6 +85,7 @@ if(USE_CONAN)
 elseif(USE_VCPKG)
     message("==> Using VCPKG")
     include(${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
+    find_package(re2)
     find_package(yaml-cpp)
     find_package(nlohmann_json)
     find_package(fmt)
@@ -92,6 +94,14 @@ elseif(USE_VCPKG)
     find_package(cxxopts)
 else() # Use FetchContent
     message("==> Using FetchContent")
+
+    FetchContent_Declare(
+        re2
+        GIT_REPOSITORY https://github.com/google/re2.git
+        GIT_TAG 2023-03-01
+      )
+
+    FetchContent_MakeAvailable(re2)
 
     FetchContent_Declare(
         yaml-cpp
