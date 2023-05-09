@@ -37,6 +37,7 @@ option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 # Project/Library Names
 set(LIBRARY_NAME "lib")
 set(YAML_LIBRARY_NAME "yaml_lib")
+set(PROJECT_UTILS "project_util")
 set(UNIT_TEST_NAME "unit_tests")
 set(UNIT_GTEST_NAME "unit_gtests")
 set(EXECUTABLE_NAME "main")

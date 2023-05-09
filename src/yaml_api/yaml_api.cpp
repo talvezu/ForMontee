@@ -48,10 +48,10 @@ bool workflow<T>::init()
 template <typename T>
 void workflow<T>::constract_net_action(const std::string key,const YAML::Node &attr)
 {
-    std::set<std::string> motors;
+    std::set<uint32_t> motors;
     for (auto item: attr["target_motors"])
     {
-        motors.insert("motor_" + item.as<std::string>());
+        motors.insert(item.as<std::uint32_t>());
     };
 
     net_actions.emplace(key, netAction(std::move(motors),

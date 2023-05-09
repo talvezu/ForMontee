@@ -15,7 +15,7 @@ TEST(PQTests, test_size)
     //time_point tp = std::chrono::milliseconds(100);
 
     auto elem = std::make_shared<PriorityQueueElement>(
-                        std::vector<string>{"motor_1","motor_2"},
+                        std::vector<int>{1,2},
                         5,//_occurances,
                         std::vector<float>({1,2,3,4}), //std::vector<float> _values,
                         std::vector<float>({}),
@@ -35,7 +35,7 @@ TEST(PQTests, test_occurences)
     static constexpr uint64_t invokation_delta = 200;
     auto values = std::vector<float>({1,2,3,4});
     auto elem = std::make_shared<PriorityQueueElement>(
-                        std::vector<string>{"motor_1","motor_2"},
+                        std::vector<int>{1,2},
                         occurences,//_occurances,
                         values,
                         std::vector<float>({}),

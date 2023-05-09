@@ -16,7 +16,7 @@ using time_point = std::chrono::time_point<Clock>;
 class PriorityQueueElement: public std::enable_shared_from_this< PriorityQueueElement >{
     //todo getters and setters friend function etc..
 public:
-    vector<string> target_motors;
+    vector<int> target_motors;
     int64_t occurrences; // -1 for endless
     std::vector<float> values;
     std::vector<float> deltas;     //values
@@ -27,7 +27,7 @@ public:
     //https://stackoverflow.com/questions/9814345/cant-overload-operator-as-member-function
 
 
-    PriorityQueueElement(std::initializer_list<string> _targets,
+    PriorityQueueElement(std::initializer_list<int> _targets,
                         int64_t _occurrences,
                         std::initializer_list<float> _values,
                         std::initializer_list<float> _deltas,
@@ -44,7 +44,7 @@ public:
 
 
 
-    PriorityQueueElement(vector<string> _targets,
+    PriorityQueueElement(vector<int> _targets,
                         int64_t _occurrences, //
                         std::vector<float> _values,
                         std::vector<float> _deltas,

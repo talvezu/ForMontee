@@ -7,16 +7,17 @@ set(UTILS_DIRECTORY_INCLUDES "./"
 
 add_subdirectory(utils)
 
-add_executable(${EXECUTABLE_NAME} ${APP_SOURCES} ${APP_HEADERS} ${UTILS_SOURCES} ${UTILS_HEADERS})
+add_executable(${EXECUTABLE_NAME} ${APP_SOURCES} ${APP_HEADERS})
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${UTILS_DIRECTORY_INCLUDES})
-# todon, why is not handled by Fetchcontent?
-#target_include_directories(${EXECUTABLE_NAME} PRIVATE ${yaml-cpp_SOURCE_DIR}/include)
+
+
 
 target_link_libraries(
     ${EXECUTABLE_NAME}
     PUBLIC ${LIBRARY_NAME}
            ${YAML_LIBRARY_NAME}
+           ${PROJECT_UTILS}
            nlohmann_json::nlohmann_json
            re2
            yaml-cpp

@@ -20,7 +20,7 @@ if(ENABLE_TESTING)
     #workaround
     set(UTILS_DIRECTORY_INCLUDES "../app/utils")
     target_include_directories(${UNIT_GTEST_NAME} PUBLIC ${GTEST_INCLUDE_DIR} ${YAML_LIBRARY_INCLUDES} ${UTILS_DIRECTORY_INCLUDES})
-    target_link_libraries(${UNIT_GTEST_NAME} PUBLIC ${LIBRARY_NAME} yaml-cpp re2 ${YAML_LIBRARY_NAME})
+    target_link_libraries(${UNIT_GTEST_NAME} PUBLIC ${LIBRARY_NAME} yaml-cpp re2 ${PROJECT_UTILS} ${YAML_LIBRARY_NAME})
     target_link_libraries(${UNIT_GTEST_NAME} PRIVATE  GTest::gtest_main)
 
     #gtest_discover_tests(${UNIT_GTEST_NAME})

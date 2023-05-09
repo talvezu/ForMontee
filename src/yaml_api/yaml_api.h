@@ -9,10 +9,10 @@
 using YAML::Parser;
 
 struct netAction{
-    std::set<std::string> motors; //unused
+    std::set<uint32_t> motors; //unused
     uint32_t times; //unused
     std::string action;
-    netAction(std::set<std::string> &&_motors, uint32_t _times, std::string _action):
+    netAction(std::set<uint32_t> &&_motors, uint32_t _times, std::string _action):
         motors(_motors),
         times(_times),
         action(_action)

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <memory>
 #include <map>
+#include <string>
 #include <iostream>
 #include "PriorityQ.h"
 #include "PriorityQueueElement.h"
@@ -12,39 +13,108 @@
 
 
 struct sample_data{
-    uint32_t engine_id;
+    int motor_id;
     float value;
+    sample_data(uint32_t id, float v) : motor_id(id), value(v) {}
 };
 
-using queue_map = std::map<std::string, std::pair<threadsafe_queue<sample_data>, threadsafe_queue<sample_data>>>;
+using std::string;
+using std::map;
+using thread_safe_sample_queue = threadsafe_queue<sample_data>;
+using shared_ptr_thread_safe_sample_queue = std::shared_ptr<threadsafe_queue<sample_data>>;
+
+//using queue_map = std::map<std::string, std::pair<threadsafe_queue<sample_data>, threadsafe_queue<sample_data>>>;
+//template<class T> to do
 class InteractiveTask{
-    std::shared_ptr<queue_map> qm;
-    string in_task;
-    string out_task;
-    PQueue<PriorityQueueElement> inner_queue;
+    std::string task_name;
+    shared_ptr_thread_safe_sample_queue &in;
+    shared_ptr_thread_safe_sample_queue &out;
+    std::unique_ptr<PQueue<PriorityQueueElement>> inner_queue;
+    std::shared_ptr<std::atomic<bool>> end_task;
+    int milli_interval;
+
+    std::shared_ptr<TaskControlBlock<float>> task_control_block;
+    std::shared_ptr<PeriodicTask<float>> periodic_task;
+
+    std::function<float(uint32_t, float)> net_function_callback;
 public:
 
-    InteractiveTask( std::shared_ptr<queue_map> _qm,
-                     string _in_task,
-                     string _out_task):qm(_qm), in_task(_in_task), out_task(_out_task)
+    InteractiveTask(std::string &&_task_name,
+                    shared_ptr_thread_safe_sample_queue &_in,
+                    shared_ptr_thread_safe_sample_queue &_out,
+                    std::unique_ptr<PQueue<PriorityQueueElement>> _inner_queue,
+                    std::shared_ptr<std::atomic<bool>> _end_task,
+                    int _milli_interval,
+                    std::function<float(uint32_t, float)> _net_function_callback)
+                    : task_name(_task_name), in(_in), out(_out),
+                    inner_queue(std::move(_inner_queue)), end_task(_end_task), milli_interval(_milli_interval),
+                    task_control_block(std::make_shared<TaskControlBlock<float>>(
+                                       end_task,
+                                       milli_interval,
+                                       task_name + "_" + std::to_string(milli_interval) + "_ms",
+                                       0,
+                                       std::bind(&InteractiveTask::process, this, std::placeholders::_1),
+                                       std::bind(&InteractiveTask::read, this, std::placeholders::_1),
+                                       std::bind(&InteractiveTask::write, this, std::placeholders::_1))),
+                    periodic_task(std::make_shared<PeriodicTask<float>>(task_control_block)),
+                    net_function_callback(_net_function_callback)
     {
 
     }
 
-	float read()
+	void read(std::shared_ptr<float> &Entry)
     {
         //read pq which is net instruction for engine.
-        /*
-        while(auto elem = inner_queue.try_pop(); elem != nullptr)
+        std::set<int> motors_from_inner_queue_value;
+
+        //reading inner queue if value from it ignore value from
+        while( true )
         {
-            for (auto engine_id; elem->target_motors)
-                output_queue.push({engine_id, elem->get_value()});
+            auto elem = inner_queue->try_pop();
+            if (!elem)
+                break;
+
+            float value = elem->get_value();
+            for (auto motor: elem->target_motors)
+            {
+                motors_from_inner_queue_value.insert(motor);
+                //if (logging::active)
+                    std::cout<<*elem<<"\n";
+
+                //call net function with the value
+                if (net_function_callback)
+                    net_function_callback(motor, value);
+                //we gut value from
+            }
         }
-        */
+
+        //read from input queue
+        while( true )
+        {
+            auto elem = in->try_pop();
+            if (!elem)
+                break;
+
+            float value = elem->value;
+            auto x = motors_from_inner_queue_value.find(elem->motor_id);
+            if (motors_from_inner_queue_value.find(elem->motor_id) == motors_from_inner_queue_value.end())
+            {
+                //if (logging::active)
+                    std::cout<<"motor: "<<elem->motor_id<<" value:"<<value<<"\n";
+                if (net_function_callback)
+                    net_function_callback(elem->motor_id, value);
+            }
+            else
+            {
+                //if (logging::active)
+                    std::cout<<"skipped! motor: "<<elem->motor_id<<" value:"<<value<<"\n";
+
+            }
+        }
 
     }
 
-	void process()
+	void process(std::shared_ptr<float> &Entry)
     {
         //calc from data_for_engine
         //send to engine thread;
@@ -54,39 +124,10 @@ public:
         //}
     }
 
-    void write(float f)
+    void write(std::shared_ptr<float> &Entry)
     {
         //optional write to future db;
     }
 
-    /*
-    auto task_control_block_10 = std::make_shared<TaskControlBlock<DBEntry>>(end_task);
-	task_control_block_10->milli_interval = 10;
-	task_control_block_10->task_name = std::string("task_10");
-	task_control_block_10->mask = static_cast<unsigned>(storage::component::engine_1);
-	task_control_block_10->readData = std::bind(&storage::read_entry, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_1));
-	task_control_block_10->writeData = std::bind(&storage::write_entry, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_1));
-    task_control_block_10->process = std::bind(&storage::process, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_1));
-
-    auto task_control_block_20 = std::make_shared<TaskControlBlock<DBEntry>>(end_task);
-	task_control_block_20->milli_interval = 20;
-	task_control_block_20->task_name = std::string("task_20");
-	task_control_block_20->mask = static_cast<unsigned>(storage::component::engine_2);
-	task_control_block_20->readData = std::bind(&storage::read_entry, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_2));
-	task_control_block_20->writeData = std::bind(&storage::write_entry, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_2));
-    task_control_block_20->process = std::bind(&storage::process, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_2));
-
-    auto task_control_block_40 = std::make_shared<TaskControlBlock<DBEntry>>(end_task);
-	task_control_block_40->milli_interval = 40;
-	task_control_block_40->task_name = std::string("task_40");
-	task_control_block_40->mask = static_cast<unsigned>(storage::component::engine_3);
-	task_control_block_40->readData = std::bind(&storage::read_entry, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_3));
-	task_control_block_40->writeData = std::bind(&storage::write_entry, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_3));
-    task_control_block_40->process = std::bind(&storage::process, &s, std::placeholders::_1, static_cast<uint32_t>(storage::component::engine_3));
-
-    shared_ptrrPeriodicTask<DBEntry> task_10(task_control_block_10);
-    PeriodicTask<DBEntry> task_20(task_control_block_20);
-	PeriodicTask<DBEntry> task_40(task_control_block_40);
-    */
 };
 
