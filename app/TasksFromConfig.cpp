@@ -29,8 +29,8 @@ std::map<std::string, shared_ptr<InteractiveTask>> InteractiveTasks;
 
 float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> net_functions, uint32_t engine, float value)
 {
-
-    std::cout<<"callback called for engine:"<<engine<<" with value: "<<value<<"\n";
+    if (logging::active)
+        std::cout<<"callback called for engine:"<<engine<<" with value: "<<value<<"\n";
 
     /*to do improve, no point in searching over again*/
     for (auto net_func: net_functions)
@@ -45,6 +45,28 @@ float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> n
     return value;
 }
 
+float execute_auto_tune_function(uint32_t engine, float value)
+{
+
+    if (logging::active)
+        std::cout<<"execute_net_function callback called for engine:"<<engine<<" with value: "<<value<<"\n";
+    static bool increament{true};
+    if (value < 0.99f && value > 0.01)
+        if (increament)
+            return value*=1.01f;
+        else
+            return value*=0.99f;
+    else
+    {
+        if (increament)
+            value-=0.02f;
+        else
+            value+=0.01f;
+
+        increament = !increament;
+    }
+    return value;
+}
 
 void tasks_from_config_impl(workflow<float> &work_flow)
 {
@@ -109,10 +131,13 @@ void tasks_from_config_impl(workflow<float> &work_flow)
 
 
     auto net_func_callback = std::bind(&execute_net_function, net_functions, std::placeholders::_1, std::placeholders::_2);
-    InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask>(std::move(std::string("Main")),queues_map["Main"]["in"], queues_map["Motors"]["out"], std::move(ForMainPQ), end_task, 100, net_func_callback));
-    //InteractiveTasks.emplace("Motor", std::make_shared<InteractiveTask>(queues_map["Motors"]["in"], queues_map["Main"]["in"], nullptr, end_task, 10, nullptr));
+    InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask>(std::move(std::string("Main")),queues_map["Main"]["in"], queues_map["Motors"]["in"], std::move(ForMainPQ), end_task, 100, net_func_callback));
 
-    std::this_thread::sleep_for(5000ms);
+    //InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask>(std::move(std::string("Main")),queues_map["Main"]["in"], queues_map["Motors"]["in"], std::move(nullptr), end_task, 100, net_func_callback));
+    InteractiveTasks.at("Main")->inject_elements_to_queue(work_flow.get_net_func_motors());
+    InteractiveTasks.emplace("Motor", std::make_shared<InteractiveTask>(std::move(std::string("Motor")), queues_map["Motors"]["in"], queues_map["Main"]["in"], nullptr, end_task, 10, execute_auto_tune_function));
+
+    std::this_thread::sleep_for(500000ms);
     end_task->store(true);
 
 }

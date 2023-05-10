@@ -36,7 +36,7 @@ class InteractiveTask{
     std::shared_ptr<TaskControlBlock<float>> task_control_block;
     std::shared_ptr<PeriodicTask<float>> periodic_task;
 
-    std::function<float(uint32_t, float)> net_function_callback;
+    std::function<float(uint32_t, float)> callback;
 public:
 
     InteractiveTask(std::string &&_task_name,
@@ -45,7 +45,7 @@ public:
                     std::unique_ptr<PQueue<PriorityQueueElement>> _inner_queue,
                     std::shared_ptr<std::atomic<bool>> _end_task,
                     int _milli_interval,
-                    std::function<float(uint32_t, float)> _net_function_callback)
+                    std::function<float(uint32_t, float)> _callback)
                     : task_name(_task_name), in(_in), out(_out),
                     inner_queue(std::move(_inner_queue)), end_task(_end_task), milli_interval(_milli_interval),
                     task_control_block(std::make_shared<TaskControlBlock<float>>(
@@ -57,7 +57,7 @@ public:
                                        std::bind(&InteractiveTask::read, this, std::placeholders::_1),
                                        std::bind(&InteractiveTask::write, this, std::placeholders::_1))),
                     periodic_task(std::make_shared<PeriodicTask<float>>(task_control_block)),
-                    net_function_callback(_net_function_callback)
+                    callback(_callback)
     {
 
     }
@@ -68,7 +68,7 @@ public:
         std::set<int> motors_from_inner_queue_value;
 
         //reading inner queue if value from it ignore value from
-        while( true )
+        if (inner_queue) while( true )
         {
             auto elem = inner_queue->try_pop();
             if (!elem)
@@ -80,11 +80,11 @@ public:
                 motors_from_inner_queue_value.insert(motor);
                 //if (logging::active)
                     std::cout<<*elem<<"\n";
+                for (auto &motor: elem->target_motors)
+                {
+                    out->push({static_cast<uint32_t>(motor), value});
+                }
 
-                //call net function with the value
-                if (net_function_callback)
-                    net_function_callback(motor, value);
-                //we gut value from
             }
         }
 
@@ -96,13 +96,16 @@ public:
                 break;
 
             float value = elem->value;
-            auto x = motors_from_inner_queue_value.find(elem->motor_id);
             if (motors_from_inner_queue_value.find(elem->motor_id) == motors_from_inner_queue_value.end())
             {
-                //if (logging::active)
+                if (logging::active)
                     std::cout<<"motor: "<<elem->motor_id<<" value:"<<value<<"\n";
-                if (net_function_callback)
-                    net_function_callback(elem->motor_id, value);
+                float val_returned = value;
+                if (callback)
+                    val_returned = callback(elem->motor_id, value);
+
+                std::cout<<"motor: "<<elem->motor_id<<" value retured:"<<val_returned<<"\n";
+                out->push({static_cast<uint32_t>(elem->motor_id), val_returned});
             }
             else
             {
@@ -116,12 +119,7 @@ public:
 
 	void process(std::shared_ptr<float> &Entry)
     {
-        //calc from data_for_engine
-        //send to engine thread;
-        //while(auto elem = output_queue.try_pop(); elem != nullptr)
-        //{
 
-        //}
     }
 
     void write(std::shared_ptr<float> &Entry)
@@ -129,5 +127,12 @@ public:
         //optional write to future db;
     }
 
+    void inject_elements_to_queue(const std::set<uint32_t> motors)
+    {
+        for (auto motor: motors)
+        {
+            in->push({motor, 0.5f});
+        }
+    }
 };
 

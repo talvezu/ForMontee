@@ -12,7 +12,7 @@ using YAML::Parser;
 
 template <typename T>
 FunctionTask<T>::FunctionTask(std::string _name,
-                           std::set<uint32_t> &&_target_motors,
+                           std::set<uint32_t> _target_motors,
                            uint32_t _times,
                            uint32_t _delta_in_milliseconds,
                            std::optional<std::vector<T>> _values,
@@ -51,7 +51,7 @@ void workflow<T>::constract_net_action(const std::string key,const YAML::Node &a
     std::set<uint32_t> motors;
     for (auto item: attr["target_motors"])
     {
-        motors.insert(item.as<std::uint32_t>());
+        net_func_motors.insert(item.as<std::uint32_t>());
     };
 
     net_actions.emplace(key, netAction(std::move(motors),
@@ -87,11 +87,10 @@ bool workflow<T>::load_work()
         }
         //auto obj = it->second.as<YAML::Node<FunctionTask<float>>>();
         YAML::Node attr = it->second;
-        std::set<uint32_t> s;
         for (auto item: attr["target_motors"])
         {
             //std::cout<<item<<"\n";
-            s.insert(item.as<uint32_t>());
+            gp_motors.insert(item.as<uint32_t>());
         }
 
         std::optional<std::vector<T>> values = std::nullopt;
@@ -117,7 +116,7 @@ bool workflow<T>::load_work()
 
         tasks[key] = std::make_shared<FunctionTask<float>>(
                 key,
-                std::move(s),
+                gp_motors,
                 attr["times"].as<uint32_t>(),
                 attr["delta_in_milliseconds"].as<uint32_t>(),
                 std::move(values),
@@ -125,11 +124,8 @@ bool workflow<T>::load_work()
                 );
         std::cout<<*tasks[key].get();
 
-
-        task_count += s.size();
         continue;
 
-        //Point3f pos;
     }
     return true;
 }
@@ -145,10 +141,11 @@ std::shared_ptr<FunctionTask<T>> workflow<T>::get_task_by_name(std::string name)
 }
 
 template <typename T>
-uint8_t workflow<T>::get_engines_count()
+uint8_t workflow<T>::get_motors_count()
 {
-    return static_cast<uint8_t> (task_count);
+    return static_cast<uint8_t> (gp_motors.size() + net_func_motors.size());
 }
+
 
 template class workflow<float>;
 template class FunctionTask<float>;
