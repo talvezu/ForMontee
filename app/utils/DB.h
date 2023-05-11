@@ -28,7 +28,7 @@ namespace utils{
             return ret;
         }
 
-        void set_component_db(const std::string &component, std::map<K, V> &new_vals)
+        void set_component_db(const std::string &component, const std::map<K, V> &new_vals)
         {
             std::scoped_lock<std::mutex> l(main_db[component].m);
             for (auto &[id, val]: new_vals)
