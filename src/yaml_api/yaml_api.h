@@ -112,5 +112,15 @@ public:
         return net_func_motors;
     }
 
+    std::set<uint32_t> get_all_motors()
+    {
+        std::set<uint32_t> union_set;
+
+        std::set_union(gp_motors.begin(), gp_motors.end(), net_func_motors.begin(), net_func_motors.end(),
+                   std::inserter(union_set, union_set.begin()));
+
+        return union_set;
+    }
+
 };
 
