@@ -17,7 +17,7 @@ void set_initial_data(auto &db)
 
 TEST(DBTests, DatabaseBaseTest)
 {
-    DB<uint32_t, float> db;
+    utils::DB<uint32_t, float> db;
     set_initial_data(db);
     auto eng_comp_db = db.get_component_db("engines");
     ASSERT_FLOAT_EQ (eng_comp_db.at(1), 0.1f);
