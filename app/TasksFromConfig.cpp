@@ -1,4 +1,5 @@
 #include <memory>
+#include <random>
 #include "TasksFromConfig.h"
 #include "PeriodicTask.h"
 #include "PriorityQ.h"
@@ -69,6 +70,27 @@ float execute_auto_tune_function(uint32_t engine, float value)
     return value;
 }
 
+float execute_random_noise(uint32_t engine, float value)
+{
+
+    if (logging::active)
+        std::cout<<"execute_random_noise callback called for engine:"<<engine<<" with value: "<<value<<"\n";
+
+    auto randomNumberBetween = [](int low, int high)
+    {
+        auto randomFunc = [distribution_ = std::uniform_int_distribution<int>(low, high),
+            random_engine_ = std::mt19937{ std::random_device{}() }]() mutable
+        {
+            return distribution_(random_engine_);
+        };
+        return randomFunc;
+    };
+    auto noise = randomNumberBetween(-1000, 1000);
+
+    return value;
+}
+
+
 void tasks_from_config_impl(workflow<float> &work_flow)
 {
     auto ForMainPQ = std::make_unique<PQueue<PriorityQueueElement>>();
@@ -130,27 +152,25 @@ void tasks_from_config_impl(workflow<float> &work_flow)
     auto net_func_callback = std::bind(&execute_net_function, net_functions, std::placeholders::_1, std::placeholders::_2);
 
 
-    /**********/
-    //  main  //
-    /**********/
-    //won't bind, main can get db both for Engines and for PositionLoop
-    auto get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::placeholders::_1);
 
-    //can bind, loops does not set value
-    auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("Engines"), std::placeholders::_2);
-    //auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::placeholders::_1, std::placeholders::_2);
-    InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Main")), std::move(ForMainPQ), end_task, 100, net_func_callback, get_db_values_callback, engines_set_db_values_callback));
-    InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask<uint32_t, float>>(engines_set_db_values_callback));
     /**********/
     //Engines //
     /**********/
     auto engines_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::string("Engines"));
-    InteractiveTasks.emplace("Engines", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Engines")), std::move(ForMainPQ), end_task, 100, net_func_callback, engines_get_db_values_callback, engines_set_db_values_callback));
+    auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("Engines"), std::placeholders::_1);
+    InteractiveTasks.emplace("Engines", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Engines")), nullptr, end_task, 10, execute_auto_tune_function, engines_get_db_values_callback, engines_set_db_values_callback));
+
+    /**********/
+    //  main  //
+    /**********/
+    InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Main")), std::move(ForMainPQ), end_task, 100, net_func_callback, engines_get_db_values_callback, engines_set_db_values_callback));
+
     /****************/
     // PositionLoop //
     /****************/
-    //auto loop_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::placeholders::_1, std::string("position_loop"));
-    //InteractiveTasks.emplace("PositionLoop", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Engines")), std::move(ForMainPQ), end_task, 100, net_func_callback, engines_get_db_values_callback, engines_set_db_values_callback));
+    auto loop_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::string("position_loop"));
+    auto loop_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("position_loop"), std::placeholders::_1);
+    InteractiveTasks.emplace("PositionLoop", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Loop")), nullptr, end_task, 4, execute_random_noise, loop_get_db_values_callback, loop_set_db_values_callback));
 
 
     std::this_thread::sleep_for(500000ms);

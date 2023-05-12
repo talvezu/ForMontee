@@ -32,9 +32,12 @@ class InteractiveTask{
     int milli_interval;
     std::shared_ptr<TaskControlBlock<float>> task_control_block;
     std::shared_ptr<PeriodicTask<float>> periodic_task;
-    std::function<float(uint32_t, float)> process_net_functions_callback;
-    std::function<std::map<K, V>(const std::string &)> get_new_data_func;
-    std::function<void(const std::string , std::map<K, V>)> set_new_data_func;
+    std::function<float(K, V)> process_net_functions_callback;
+    std::function<std::map<K, V>()> get_new_data_func;
+    std::function<void(/*binded: const std::string &,*/ std::map<K, V>)> set_new_data_func;
+
+
+    std::map<K, V> data;
 public:
 
     InteractiveTask(std::string &&_task_name,
@@ -42,8 +45,8 @@ public:
                     std::shared_ptr<std::atomic<bool>> _end_task,
                     int _milli_interval,
                     std::function<float(uint32_t, float)> _process_net_functions_callback,
-                    std::function<std::map<K, V>(const std::string &)> _get_new_data_func = nullptr,
-                    std::function<void(const std::string , std::map<K, V>)> _set_new_data_func = nullptr
+                    std::function<std::map<K, V>(/* binded: const std::string & */)> _get_new_data_func = nullptr,
+                    std::function<void(/* binded: const std::string , */std::map<K, V>)> _set_new_data_func = nullptr
                     )
                     : task_name(_task_name),
                     inner_queue(std::move(_inner_queue)), end_task(_end_task), milli_interval(_milli_interval),
@@ -98,11 +101,13 @@ public:
             }
         }
 
+        get_new_data_func();
     }
 
 	void process(std::shared_ptr<float> &Entry)
     {
-
+        for (auto &[k, v]: data)
+            process_net_functions_callback(k,v);
     }
 
     void write(std::shared_ptr<float> &Entry)
