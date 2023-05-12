@@ -12,7 +12,6 @@
 
 using in_out_map = map<string, map<string, shared_ptr_thread_safe_sample_queue>>;
 
-
 in_out_map queues_map;
 
 template <class T>
@@ -32,7 +31,7 @@ std::map<std::string, shared_ptr<InteractiveTask<uint32_t, float>>> InteractiveT
 float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> net_functions, uint32_t engine, float value)
 {
     if (logging::active)
-        std::cout<<"callback called for engine:"<<engine<<" with value: "<<value<<"\n";
+        std::cout<<"execute_net_function called for engine:"<<engine<<" with value: "<<value<<"\n";
 
     /*to do improve, no point in searching over again*/
     for (auto net_func: net_functions)
@@ -40,32 +39,37 @@ float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> n
         for (auto motor: net_func.second->get_motors())
         {
             if (motor == engine)
+            {
+                if (logging::active)
+                    cout <<net_func.first<<" over "<<motor<< " called"<<"\n";
                 return net_func.second->operator()(value);
+            }
+
         }
 
     }
     return value;
 }
 
-float execute_auto_tune_function(uint32_t engine, float value)
+//float execute_auto_tune_function(std::shared_ptr<std::vector<bool>> inc_dec_array, uint32_t engine, float value)
+float execute_auto_tune_function(std::shared_ptr<std::map<uint32_t, bool>> inc_dec_hash, uint32_t engine, float value)
 {
 
     if (logging::active)
-        std::cout<<"execute_net_function callback called for engine:"<<engine<<" with value: "<<value<<"\n";
-    static bool increament{true};
+        std::cout<<"execute_auto_tune_function callback called for engine:"<<engine<<" with value: "<<value<<"\n";
     if (value < 0.99f && value > 0.01)
-        if (increament)
+        if (inc_dec_hash->at(engine))
             return value*=1.01f;
         else
             return value*=0.99f;
     else
     {
-        if (increament)
-            value-=0.02f;
+        if (inc_dec_hash->at(engine))
+            value-=0.01f;
         else
             value+=0.01f;
 
-        increament = !increament;
+        (*inc_dec_hash)[engine] = !(*inc_dec_hash)[engine];
     }
     return value;
 }
@@ -155,9 +159,11 @@ void tasks_from_config_impl(workflow<float> &work_flow)
 
     utils::DB<uint32_t, float> db;
     std::map<uint32_t, float> new_engines;
+    auto inc_dec_hash = std::make_shared<std::map<uint32_t, bool>>(); /*make_unique does not work for some reason*/
     for (auto motor_instance: work_flow.get_all_motors())
     {
         new_engines[motor_instance] = 0.5f;
+        (*inc_dec_hash)[motor_instance] = true;
     }
     db.set_component_db("Engines", new_engines);
     db.set_component_db("PositionLoop", std::map<uint32_t, float>{{1, 1.0f}});
@@ -167,19 +173,18 @@ void tasks_from_config_impl(workflow<float> &work_flow)
 
     auto net_func_callback = std::bind(&execute_net_function, net_functions, std::placeholders::_1, std::placeholders::_2);
 
-
-
     /**********/
     //Engines //
     /**********/
-    //auto engines_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::string("Engines"));
-    //auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("Engines"), std::placeholders::_1);
-    //InteractiveTasks.emplace("Engines", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Engines")), nullptr, end_task, 10, execute_auto_tune_function, engines_get_db_values_callback, engines_set_db_values_callback));
+    auto engines_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::string("Engines"));
+    auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("Engines"), std::placeholders::_1);
+    auto engines_execute_auto_tune_function = std::bind(&execute_auto_tune_function, std::move(inc_dec_hash), std::placeholders::_1, std::placeholders::_2);
+    InteractiveTasks.emplace("Engines", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Engines")), nullptr, end_task, 10, engines_execute_auto_tune_function, engines_get_db_values_callback, engines_set_db_values_callback));
 
     /**********/
     //  main  //
     /**********/
-    //InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Main")), std::move(ForMainPQ), end_task, 100, net_func_callback, engines_get_db_values_callback, engines_set_db_values_callback));
+    InteractiveTasks.emplace("Main", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Main")), std::move(ForMainPQ), end_task, 100, net_func_callback, engines_get_db_values_callback, engines_set_db_values_callback));
 
     /****************/
     // PositionLoop //

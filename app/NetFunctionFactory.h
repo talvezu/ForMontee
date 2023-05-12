@@ -23,14 +23,22 @@ public:
 class Bend : public NetFunction {
 public:
     float operator()(float f) override {
-        return -f;
+        if (f < 0.9)
+            return f * 1.05f;
+        else
+            return f/2;
     }
 };
 
 class Rotate : public NetFunction {
 public:
     float operator()(float f) override {
-        return f * f;
+        if (f > 0.1)
+            return  std::sin(f);
+        else
+            return 1;
+
+
     }
 };
 
