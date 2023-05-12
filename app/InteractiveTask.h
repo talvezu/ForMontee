@@ -32,7 +32,7 @@ class InteractiveTask{
     int milli_interval;
     std::shared_ptr<TaskControlBlock<float>> task_control_block;
     std::shared_ptr<PeriodicTask<float>> periodic_task;
-    std::function<float(K, V)> process_net_functions_callback;
+    std::function<float(K, V)> process_callback;
     std::function<std::map<K, V>()> get_new_data_func;
     std::function<void(/*binded: const std::string &,*/ std::map<K, V>)> set_new_data_func;
 
@@ -44,7 +44,7 @@ public:
                     std::unique_ptr<PQueue<PriorityQueueElement>> _inner_queue,
                     std::shared_ptr<std::atomic<bool>> _end_task,
                     int _milli_interval,
-                    std::function<float(uint32_t, float)> _process_net_functions_callback,
+                    std::function<float(uint32_t, float)> _process_callback,
                     std::function<std::map<K, V>(/* binded: const std::string & */)> _get_new_data_func = nullptr,
                     std::function<void(/* binded: const std::string , */std::map<K, V>)> _set_new_data_func = nullptr
                     )
@@ -59,16 +59,9 @@ public:
                                        std::bind(&InteractiveTask::read, this, std::placeholders::_1),
                                        std::bind(&InteractiveTask::write, this, std::placeholders::_1))),
                     periodic_task(std::make_shared<PeriodicTask<float>>(task_control_block)),
-                    process_net_functions_callback(_process_net_functions_callback),
+                    process_callback(_process_callback),
                     get_new_data_func(_get_new_data_func),
                     set_new_data_func(_set_new_data_func)
-
-    {
-
-    }
-
-    InteractiveTask(std::function<void(const std::string , std::map<K, V>)> _set_new_data_func = nullptr)
-                    : set_new_data_func(_set_new_data_func)
 
     {
 
@@ -101,18 +94,18 @@ public:
             }
         }
 
-        get_new_data_func();
+        data = get_new_data_func();
     }
 
 	void process(std::shared_ptr<float> &Entry)
     {
         for (auto &[k, v]: data)
-            process_net_functions_callback(k,v);
+            data[k] = process_callback(k,v);
     }
 
     void write(std::shared_ptr<float> &Entry)
     {
-        //optional write to future db;
+        set_new_data_func(data);
     }
 
 };
