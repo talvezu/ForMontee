@@ -9,7 +9,7 @@ add_subdirectory(utils)
 
 add_executable(${EXECUTABLE_NAME} ${APP_SOURCES} ${APP_HEADERS})
 
-target_include_directories(${EXECUTABLE_NAME} PUBLIC ${UTILS_DIRECTORY_INCLUDES})
+target_include_directories(${EXECUTABLE_NAME} PUBLIC ${PROJECT_UTILS})
 
 
 
