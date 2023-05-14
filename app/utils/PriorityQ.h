@@ -57,11 +57,14 @@ public:
 
             // Get the duration since the epoch
             auto duration = ms.time_since_epoch();
-            auto duration_top = (std::chrono::time_point_cast<std::chrono::milliseconds>(this->m_queue.top()->next_invokation)).time_since_epoch();
+            if (this->m_queue.size())
+            {
+                auto duration_top = (std::chrono::time_point_cast<std::chrono::milliseconds>(this->m_queue.top()->next_invokation)).time_since_epoch();
 
-            // Print the duration in milliseconds
-            std::cout << duration.count() << " milliseconds since the epoch" << std::endl;
-            std::cout << duration_top.count() << " top milliseconds since the epoch" << std::endl;
+                // Print the duration in milliseconds
+                std::cout << duration.count() << " milliseconds since the epoch" << std::endl;
+                std::cout << duration_top.count() << " top milliseconds since the epoch" << std::endl;
+            }
 
         };
 
@@ -69,10 +72,9 @@ public:
     }
 
     shared_ptr<T> try_pop() {
+        std::unique_lock lock(m_mutex);
         if (logging::active)
             status_report();
-        std::unique_lock lock(m_mutex);
-
         auto t = Clock::now();
         auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(t);
 

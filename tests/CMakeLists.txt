@@ -9,7 +9,8 @@ if(ENABLE_TESTING)
     set(GTEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/gtest_yaml_api.cpp"
                       "${CMAKE_CURRENT_SOURCE_DIR}/gtest_priority_queue.cpp"
                       "${CMAKE_CURRENT_SOURCE_DIR}/gtest_scheduled_task.cpp"
-                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_database.cpp")
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_database.cpp"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_simple_boost_shared_memory.cpp")
     set(GTEST_HEADERS "")
 
     add_executable(${UNIT_TEST_NAME} ${TEST_SOURCES} ${TEST_HEADERS})

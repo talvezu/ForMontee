@@ -13,21 +13,14 @@
 
 using in_out_map = map<string, map<string, shared_ptr_thread_safe_sample_queue>>;
 
+
+//template<>
+//std::shared_ptr<utils::DB<uint32_t, float>> utils::FunctionPointerHolder<uint32_t, float>::static_ptr = db;
+
+
 in_out_map queues_map;
 
-template <class T>
-struct engine{
-    T position;
-};
-
-engine<float>;
-
-template <class T>
-std::map<std::string, engine<T>> engines_map;
 std::map<std::string, shared_ptr<InteractiveTask<uint32_t, float>>> InteractiveTasks;
-/**
- * Main function for the current project
-*/
 
 float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> net_functions, uint32_t engine, float value)
 {
@@ -55,7 +48,6 @@ float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> n
 //float execute_auto_tune_function(std::shared_ptr<std::vector<bool>> inc_dec_array, uint32_t engine, float value)
 float execute_auto_tune_function(std::shared_ptr<std::map<uint32_t, bool>> inc_dec_hash, uint32_t engine, float value)
 {
-
     if (logging::active)
         std::cout<<"execute_auto_tune_function callback called for engine:"<<engine<<" with value: "<<value<<"\n";
     if (value < 0.99f && value > 0.01)
@@ -111,18 +103,23 @@ float execute_random_noise(uint32_t loop, float value)
 
 }
 
-
+/**
+ * Main function for the current project
+*/
 void tasks_from_config_impl(workflow<float> &work_flow)
 {
     auto ForMainPQ = std::make_unique<PQueue<PriorityQueueElement>>();
     work_flow.load_work();
+
+    auto db = utils::get_db<uint32_t, float>();
+    db->init_sm("db_shared_memory");
 
     for (auto item: work_flow.get_tasks()){
         auto net_func = item.second;
         std::cout<<net_func->task_name<<"\n";
 
         std::vector<int> motors;
-        for (int motor: net_func->target_motors)
+        for (auto motor: net_func->target_motors)
         {
             motors.push_back(motor);
         }
@@ -158,7 +155,6 @@ void tasks_from_config_impl(workflow<float> &work_flow)
         cout<<net_action_details.action<<"\n";
     }
 
-    utils::DB<uint32_t, float> db;
     std::map<uint32_t, float> new_engines;
     auto inc_dec_hash = std::make_shared<std::map<uint32_t, bool>>(); /*make_unique does not work for some reason*/
     for (auto motor_instance: work_flow.get_all_motors())
@@ -166,8 +162,8 @@ void tasks_from_config_impl(workflow<float> &work_flow)
         new_engines[motor_instance] = 0.5f;
         (*inc_dec_hash)[motor_instance] = true;
     }
-    db.set_component_db("Engines", new_engines);
-    db.set_component_db("PositionLoop", std::map<uint32_t, float>{{1, 1.0f}});
+    db->set_component_db("Engines", new_engines);
+    db->set_component_db("PositionLoop", std::map<uint32_t, float>{{1, 1.0f}});
 
 
     auto end_task = std::make_shared<std::atomic<bool>>(false);
@@ -177,8 +173,8 @@ void tasks_from_config_impl(workflow<float> &work_flow)
     /**********/
     //Engines //
     /**********/
-    auto engines_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::string("Engines"));
-    auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("Engines"), std::placeholders::_1);
+    auto engines_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, db.get(), std::string("Engines"));
+    auto engines_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, db.get(), std::string("Engines"), std::placeholders::_1);
     auto engines_execute_auto_tune_function = std::bind(&execute_auto_tune_function, std::move(inc_dec_hash), std::placeholders::_1, std::placeholders::_2);
     InteractiveTasks.emplace("Engines", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Engines")), nullptr, end_task, 10, engines_execute_auto_tune_function, engines_get_db_values_callback, engines_set_db_values_callback));
 
@@ -190,10 +186,9 @@ void tasks_from_config_impl(workflow<float> &work_flow)
     /****************/
     // PositionLoop //
     /****************/
-    auto loop_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, &db, std::string("PositionLoop"));
-    auto loop_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, &db, std::string("PositionLoop"), std::placeholders::_1);
-    InteractiveTasks.emplace("PositionLoop", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Loop")), nullptr, end_task, 4, execute_random_noise, loop_get_db_values_callback, loop_set_db_values_callback));
-
+    auto loop_get_db_values_callback = std::bind(&utils::DB<uint32_t,float>::get_component_db, db.get(), std::string("PositionLoop"));
+    auto loop_set_db_values_callback = std::bind(&utils::DB<uint32_t,float>::set_component_db, db.get(), std::string("PositionLoop"), std::placeholders::_1);
+    InteractiveTasks.emplace("PositionLoop", std::make_shared<InteractiveTask<uint32_t, float>>(std::string("Loop"), nullptr, end_task, 4, execute_random_noise, loop_get_db_values_callback, loop_set_db_values_callback));
 
     std::this_thread::sleep_for(5000ms);
 

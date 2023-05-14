@@ -94,5 +94,10 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": [
+        "--extension-pkg-whitelist=python_api_shared_data"
+    ],
+    "python.linting.pylintEnabled": true
 }
