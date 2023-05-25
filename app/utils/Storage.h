@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iostream>
-#include "logging.h"
+#include "global_settings.h"
 
 
 template <typename T>
@@ -36,7 +36,7 @@ public:
         entry->act();
         std::unique_lock<std::mutex> l(m);
         total_count += 1;
-        if (logging::active)
+        if (settings::logging::active)
             std::cout<<total_count<<std::endl;
     }
 

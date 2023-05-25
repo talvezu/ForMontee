@@ -5,7 +5,7 @@ set(UTILS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/ThreadUtil.cpp"
 
 set(UTILS_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/ThreadUtil.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/DB.h"
-                  "${CMAKE_CURRENT_SOURCE_DIR}/logging.h"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/global_settings.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/Storage.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/thread_safe_queue.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/PriorityQueueElement.h"

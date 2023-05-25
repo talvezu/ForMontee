@@ -9,7 +9,7 @@
 #include "PriorityQ.h"
 #include "PriorityQueueElement.h"
 #include "thread_safe_queue.h"
-#include "logging.h"
+#include "global_settings.h"
 
 
 struct sample_data{

@@ -12,7 +12,7 @@
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
-#include "logging.h"
+#include "global_settings.h"
 
 namespace bip = boost::interprocess;
 
@@ -122,7 +122,7 @@ namespace utils{
     {
         if (sm_dev_location.size())
         {
-            if (logging::active)
+            if (settings::logging::active)
             {
                 std::cout<<"shared memory already initialized at:"<<sm_dev_location<<"\n";
             }

@@ -8,7 +8,7 @@
 #include "NetFunctionFactory.h"
 #include "InteractiveTask.h"
 #include "DB.h"
-#include "logging.h"
+#include "global_settings.h"
 
 
 using in_out_map = map<string, map<string, shared_ptr_thread_safe_sample_queue>>;
@@ -24,7 +24,7 @@ std::map<std::string, shared_ptr<InteractiveTask<uint32_t, float>>> InteractiveT
 
 float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> net_functions, uint32_t engine, float value)
 {
-    if (logging::active)
+    if (settings::logging::active)
         std::cout<<"execute_net_function called for engine:"<<engine<<" with value: "<<value<<"\n";
 
     /*to do improve, no point in searching over again*/
@@ -34,7 +34,7 @@ float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> n
         {
             if (motor == engine)
             {
-                if (logging::active)
+                if (settings::logging::active)
                     cout <<net_func.first<<" over "<<motor<< " called"<<"\n";
                 return net_func.second->operator()(value);
             }
@@ -48,7 +48,7 @@ float execute_net_function(std::map<std::string, std::shared_ptr<NetFunction>> n
 //float execute_auto_tune_function(std::shared_ptr<std::vector<bool>> inc_dec_array, uint32_t engine, float value)
 float execute_auto_tune_function(std::shared_ptr<std::map<uint32_t, bool>> inc_dec_hash, uint32_t engine, float value)
 {
-    if (logging::active)
+    if (settings::logging::active)
         std::cout<<"execute_auto_tune_function callback called for engine:"<<engine<<" with value: "<<value<<"\n";
     if (value < 0.99f && value > 0.01)
         if (inc_dec_hash->at(engine))
@@ -70,7 +70,7 @@ float execute_auto_tune_function(std::shared_ptr<std::map<uint32_t, bool>> inc_d
 float execute_random_noise(uint32_t loop, float value)
 {
 
-    //if (logging::active)
+    if (settings::logging::active)
         std::cout<<"execute_random_noise callback called for loop:"<<loop<<" with value: "<<value<<"\n";
 
 

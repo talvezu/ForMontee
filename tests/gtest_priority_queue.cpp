@@ -6,7 +6,7 @@
 #include "thread_safe_queue.h"
 #include "PriorityQ.h"
 #include "PriorityQueueElement.h"
-#include "logging.h"
+#include "global_settings.h"
 
 
 TEST(PQTests, test_size)
@@ -51,7 +51,7 @@ TEST(PQTests, test_occurences)
         auto poped_elem = Q.try_pop();
         if (poped_elem )
         {
-            if (logging::active)
+            if (settings::logging::active)
                 std::cout<<*poped_elem.get();
 
             ASSERT_EQ(poped_elem->get_value(), values[(elem_count++)%values.size()]);
