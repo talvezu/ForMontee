@@ -108,5 +108,9 @@ public:
         set_new_data_func(data);
     }
 
+    void join()
+    {
+        periodic_task->join();
+    }
 };
 

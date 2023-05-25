@@ -1,5 +1,6 @@
 #include <memory>
 #include <random>
+#include <atomic>
 #include "TasksFromConfig.h"
 #include "PeriodicTask.h"
 #include "PriorityQ.h"
@@ -194,9 +195,12 @@ void tasks_from_config_impl(workflow<float> &work_flow)
     InteractiveTasks.emplace("PositionLoop", std::make_shared<InteractiveTask<uint32_t, float>>(std::move(std::string("Loop")), nullptr, end_task, 4, execute_random_noise, loop_get_db_values_callback, loop_set_db_values_callback));
 
 
-    std::this_thread::sleep_for(500000ms);
+    std::this_thread::sleep_for(5000ms);
 
     end_task->store(true);
 
-
+    for (auto &[_, t]: InteractiveTasks)
+    {
+        t->join();
+    }
 }

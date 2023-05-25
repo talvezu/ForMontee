@@ -60,8 +60,10 @@ class PeriodicTask
 {
 	//TaskControlBlock<T> task_control_block;
     std::thread task_context;
+    bool done;
     std::string task_name;
-	void thread_routine(std::shared_ptr<TaskControlBlock<T>> task_control_block) {
+    std::shared_ptr<TaskControlBlock<T>> task_control_block;
+	void thread_routine() {
 
 		cout << std::this_thread::get_id() << " interval " << task_control_block->milli_interval << "\n";
 		auto sleep_period = std::chrono::duration<int, std::milli>(task_control_block->milli_interval);
@@ -88,27 +90,33 @@ class PeriodicTask
 			}
 		}
 		cout << std::this_thread::get_id() << " Done\n";
+        done = true;
 	};
 
-	void thread_routine_wrapper(std::shared_ptr<TaskControlBlock<T>> task_control_block) {
+	void thread_routine_wrapper(std::shared_ptr<TaskControlBlock<T>> task_control_block_) {
         //cout<<task_control_block->task_name<<"\n";
+        task_control_block = task_control_block_;
         set_thread_name(task_control_block->task_name);
-        thread_routine(task_control_block);
+        thread_routine();
 	};
 
 
 public:
-	//PeriodicTask(shared_ptr<TaskControlBlock<T>> _task_control_block) :/*task_control_block(_task_control_block),*/ task_context{} {
-    PeriodicTask(std::shared_ptr<TaskControlBlock<T>> _task_control_block): task_context{} {
+    PeriodicTask(std::shared_ptr<TaskControlBlock<T>> _task_control_block):
+        task_context{std::thread(&PeriodicTask::thread_routine_wrapper, this, _task_control_block)},
+        done{false} {
         task_name = _task_control_block->task_name;
-        task_context = std::thread(&PeriodicTask::thread_routine_wrapper, this, _task_control_block);
 	};
 
+    void join()
+    {
+        while(!done);
+    }
 
 	~PeriodicTask() {
 		task_context.join();
         if (logging::active)
-		    std::cout << task_name<< "joined\n";
+		    std::cout << task_name<< ": joined\n";
 	};
 };
 
