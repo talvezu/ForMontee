@@ -5,6 +5,7 @@
 #include <mutex>
 #include <functional>
 #include <iostream>
+#include "global_settings.h"
 
 namespace utils{
 
@@ -69,7 +70,7 @@ namespace utils{
                     main_db[component].my_map[id] = val;
                 }
             }
-            if (sm_dev_location.size())
+            if (settings::use_shared_memory::active && sm_dev_location.size())
                 update_sm();
         }
 

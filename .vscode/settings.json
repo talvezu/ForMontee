@@ -99,5 +99,7 @@
     "python.linting.pylintArgs": [
         "--extension-pkg-whitelist=python_api_shared_data"
     ],
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "editor.tabSize": 4
+
 }

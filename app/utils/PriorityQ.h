@@ -5,7 +5,7 @@
 #include <memory>
 #include <iostream>
 #include "PriorityQueueElement.h"
-#include "logging.h"
+#include "global_settings.h"
 
 using std::cout;
 using std::shared_ptr;
@@ -73,7 +73,7 @@ public:
 
     shared_ptr<T> try_pop() {
         std::unique_lock lock(m_mutex);
-        if (logging::active)
+        if (settings::logging::active)
             status_report();
         auto t = Clock::now();
         auto ms = std::chrono::time_point_cast<std::chrono::milliseconds>(t);

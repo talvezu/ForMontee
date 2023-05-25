@@ -7,7 +7,7 @@
 #include <functional>
 #include <limits>
 #include <pthread.h>
-#include "logging.h"
+#include "global_settings.h"
 #include "Storage.h"
 #include "ThreadUtil.h"
 
@@ -50,7 +50,7 @@ public:
 
     virtual ~TaskControlBlock()
     {
-        if (logging::active)
+        if (settings::logging::active)
             cout<<"virutal ~TaskControlBlock()\n";
     }
 };
@@ -84,7 +84,7 @@ class PeriodicTask
             {
 				task_control_block->writeData(entry);
             }
-			if (logging::active)
+			if (settings::logging::active)
 			{
 				//std::cout << task_control_block->task_name << " updated entry mask " << task_control_block.mask << "\n";
 			}
@@ -113,10 +113,12 @@ public:
         while(!done);
     }
 
-	~PeriodicTask() {
-		task_context.join();
-        if (logging::active)
-		    std::cout << task_name<< ": joined\n";
-	};
+    ~PeriodicTask() {
+        task_context.join();
+        if (settings::logging::active)
+        {
+            std::cout << task_name<< ": joined\n";
+        }
+    }
 };
 
