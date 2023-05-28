@@ -1,7 +1,8 @@
 set(UTILS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/ThreadUtil.cpp"
                   "${CMAKE_CURRENT_SOURCE_DIR}/PeriodicTask.cpp"
                   "${CMAKE_CURRENT_SOURCE_DIR}/DB.cpp"
-                  "${CMAKE_CURRENT_SOURCE_DIR}/SimpleBoostSharedMemory.cpp")
+                  "${CMAKE_CURRENT_SOURCE_DIR}/SimpleBoostSharedMemory.cpp"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/SharedMemoryWrapper.cpp")
 
 set(UTILS_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/ThreadUtil.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/DB.h"
@@ -11,7 +12,8 @@ set(UTILS_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/ThreadUtil.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/PriorityQueueElement.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/PriorityQ.h"
                   "${CMAKE_CURRENT_SOURCE_DIR}/PeriodicTask.h"
-                  "${CMAKE_CURRENT_SOURCE_DIR}/SimpleBoostSharedMemory.h")
+                  "${CMAKE_CURRENT_SOURCE_DIR}/SimpleBoostSharedMemory.h"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/SharedMemoryWrapper.h")
 
 
 set(UTILS_INCLUDES "./")
@@ -69,7 +71,8 @@ endif()
 
 add_clang_tidy_msvc_to_target(${PROJECT_UTILS})
 
-pybind11_add_module(python_api_shared_data "${CMAKE_CURRENT_SOURCE_DIR}/DB.cpp")
+pybind11_add_module(python_api_shared_data "${CMAKE_CURRENT_SOURCE_DIR}/DB.cpp"
+                                           "${CMAKE_CURRENT_SOURCE_DIR}/SharedMemoryWrapper.cpp")
 
 
 

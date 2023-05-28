@@ -112,7 +112,8 @@ void tasks_from_config_impl(workflow<float> &work_flow)
     work_flow.load_work();
 
     auto db = utils::get_db<uint32_t, float>();
-    db->init_sm("db_shared_memory");
+    if (settings::use_shared_memory::active)
+        db->init_sm("db_shared_memory");
 
     for (auto item: work_flow.get_tasks()){
         auto net_func = item.second;

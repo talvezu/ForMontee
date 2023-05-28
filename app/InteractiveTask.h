@@ -93,19 +93,21 @@ public:
 
             }
         }
-
-        data = get_new_data_func();
+        if (get_new_data_func)
+            data = get_new_data_func();
     }
 
 	void process(std::shared_ptr<float> &Entry)
     {
-        for (auto &[k, v]: data)
-            data[k] = process_callback(k,v);
+        if (process_callback)
+            for (auto &[k, v]: data)
+                data[k] = process_callback(k,v);
     }
 
     void write(std::shared_ptr<float> &Entry)
     {
-        set_new_data_func(data);
+        if (set_new_data_func)
+            set_new_data_func(data);
     }
 
     void join()
