@@ -58,12 +58,11 @@ public:
 template<class T>
 class PeriodicTask
 {
-	//TaskControlBlock<T> task_control_block;
     std::thread task_context;
     bool done;
     std::string task_name;
     std::shared_ptr<TaskControlBlock<T>> task_control_block;
-	void thread_routine() {
+	void thread_routine(std::shared_ptr<TaskControlBlock<T>> task_control_block) {
 
 		cout << std::this_thread::get_id() << " interval " << task_control_block->milli_interval << "\n";
 		auto sleep_period = std::chrono::duration<int, std::milli>(task_control_block->milli_interval);
@@ -97,7 +96,7 @@ class PeriodicTask
         //cout<<task_control_block->task_name<<"\n";
         task_control_block = task_control_block_;
         set_thread_name(task_control_block->task_name);
-        thread_routine();
+        thread_routine(task_control_block);
 	};
 
 

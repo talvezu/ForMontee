@@ -8,7 +8,7 @@ namespace logging {
 };
 
 namespace use_shared_memory {
-	inline bool active{true};
+	inline bool active{false};
 };
 
 };//settings namespace

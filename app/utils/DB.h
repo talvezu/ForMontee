@@ -89,5 +89,3 @@ namespace utils{
 };
 
 template class utils::DB<uint32_t, float>;
-extern template bool utils::DB<uint32_t, float>::init_sm(std::string shared_mem_id);
-extern template std::shared_ptr<utils::DB<uint32_t, float>> utils::get_db<uint32_t, float>();

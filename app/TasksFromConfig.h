@@ -8,3 +8,5 @@ void tasks_from_config(workflow<T> &work_flow){
     tasks_from_config_impl(work_flow);
 }
 
+void join();
+
