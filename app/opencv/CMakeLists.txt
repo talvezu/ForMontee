@@ -1,12 +1,24 @@
-set(MY_OPENCV_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/VideoCapture.cpp")
+set(MY_OPENCV_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/VideoCapture.cpp"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/DashboardDisplay.cpp"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/mocking.cpp")
 
-set(MY_OPENCV_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/VideoCapture.h")
+set(MY_OPENCV_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/VideoCapture.h"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/DashboardDisplay.h"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/mocking.h")
 
 set(MY_OPENCV_INCLUDES "./")
 
 add_library(${PROJECT_MY_OPENCV} STATIC ${MY_OPENCV_SOURCES} ${MY_OPENCV_HEADERS})
 
+# Threads, have CMake package configurations available
 find_package(Threads REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+#locate and provide the necessary include directories
+#${GTK2_INCLUDE_DIRS} and ${GTK2_LIBRARIES which for some reason were not required by
+#target_include_directories and target_link_libraries
+pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+
 target_link_libraries(${PROJECT_MY_OPENCV} PUBLIC Threads::Threads opencv_core opencv_highgui)
 
 # Set OpenCV include directories
@@ -39,7 +51,11 @@ set(OpenCV_INCLUDE_DIRS
     ${OPENCV_MODULE_opencv_world_LOCATION}/include
     )
 
+#workaround
+set(UTILS_DIRECTORY_INCLUDES "../utils")
+
 target_include_directories(${PROJECT_MY_OPENCV} PUBLIC
+    ${UTILS_DIRECTORY_INCLUDES}
     ${MY_OPENCV_INCLUDES}
     ${OpenCV_INCLUDE_DIRS}
     ${CMAKE_BINARY_DIR})

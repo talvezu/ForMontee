@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "VideoCapture.h"
+#include "mocking.h"
 #include "config.hpp"
 
 TEST(OpenCVTests, VideoCapture)
@@ -14,3 +15,11 @@ TEST(OpenCVTests, VideoCapture)
     GTEST_ASSERT_EQ(1,1);
 }
 
+
+
+TEST(OpenCVTests, displayDashboard)
+{
+    auto dashb = my_opencv::DashBoard_mock();
+    dashb.draw_dashboard();
+    GTEST_ASSERT_EQ(1,1);
+}
