@@ -1,3 +1,4 @@
+#pragma once
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -49,11 +50,22 @@ public:
     }
 };
 
+class Dashboard : public NetFunction {
+public:
+    float operator()(float f) override {
+        if (f > 0.1)
+            return  std::sin(f);
+        else
+            return 1;
+
+
+    }
+};
+
 class NetFunctionFactory
 {
     static std::map<std::string, std::shared_ptr<NetFunction>>
         active_net_functions;
-
 public:
     static std::shared_ptr<NetFunction> supportNetFunction(
         const std::string &net_function_name)
@@ -70,7 +82,12 @@ public:
                 active_net_functions.emplace("rotate",
                                              std::make_shared<Rotate>());
             }
-            else
+            else if (net_function_name == "dashboard")
+            {
+                active_net_functions.emplace("dashboard", 
+                                             std::make_shared<Dashboard>());
+            }
+            else 
             {
                 return nullptr;
             }

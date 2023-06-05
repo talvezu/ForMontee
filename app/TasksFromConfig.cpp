@@ -6,10 +6,10 @@
 #include "PriorityQ.h"
 #include "PriorityQueueElement.h"
 #include "global_settings.h"
+#include "DashboardDisplay.h"
 #include <atomic>
 #include <memory>
 #include <random>
-
 
 using in_out_map =
     map<string, map<string, shared_ptr_thread_safe_sample_queue>>;
@@ -36,14 +36,22 @@ float execute_net_function(
     /*to do improve, no point in searching over again*/
     for (auto net_func : net_functions)
     {
-        for (auto motor : net_func.second->get_motors())
+        if ( "dashboard" == net_func.first )
         {
-            if (motor == engine)
+            my_opencv::DashBoard dashb;
+            dashb.draw_dashboard();
+        }
+        else
+        {
+            for (auto motor: net_func.second->get_motors())
             {
-                if (settings::logging::active)
-                    cout << net_func.first << " over " << motor << " called"
-                         << "\n";
-                return net_func.second->operator()(value);
+                if (motor == engine)
+                {
+                    if (settings::logging::active)
+                        cout << net_func.first << " over " << motor << " called"
+                             << "\n";
+                    return net_func.second->operator()(value);
+                }
             }
         }
     }

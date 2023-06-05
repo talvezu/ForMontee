@@ -33,7 +33,7 @@ void DashBoard::draw_dashboard()
     auto db = draw_dashboard_internal_sptr->db_sptr->get_all_values();
     int radius = 75;
     int i = 0;
-    if (auto iter = db.find("engines"); iter != db.end())
+    if (auto iter = db.find("Engines"); iter != db.end())
     {
 
         int count = iter->second.size();
@@ -49,16 +49,19 @@ void DashBoard::draw_dashboard()
 
             int rect_height = 0.4 * radius;
             int rect_width = radius/2;
-            int rect_x_start = posx - (0.6 * radius);
+            int rect_x_start = posx - (0.7 * radius);
             int rect_y_start = (0.1 * radius) + posy;
-            cv::rectangle(img, Point(rect_x_start, rect_y_start), Point(rect_x_start + 1.2*radius, rect_y_start + rect_height), Scalar(255, 255, 255), cv::FILLED);
-            std::string text = to_string(k) + string(" : ") + to_string(v);
+            cv::rectangle(img, Point(rect_x_start, rect_y_start), Point(rect_x_start + 1.4*radius, rect_y_start + rect_height), Scalar(255, 255, 255), cv::FILLED);
+            //std::string text = to_string(k) + string(" : ") + to_string(v).substr(0, 8);
+            std::string text = to_string(v);
             putText(img, text, Point(rect_x_start, rect_y_start*1.1), cv::FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0), 0.2);
 
             text = "engine: " + to_string(i);
-            putText(img, text, Point(posx-radius*0.5, posy), cv::FONT_HERSHEY_DUPLEX, 0.7, Scalar(0, 0, 0), 1);
+            putText(img, text, Point(posx-radius*0.5, posy), cv::FONT_HERSHEY_DUPLEX, 0.7, Scalar(0, 0, 0), 2);
             i++;
         }
+		imshow("Dashboard", img);
+        int key = cv::waitKey(1);
 
     }
 
