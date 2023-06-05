@@ -52,13 +52,11 @@ public:
 
 class Dashboard : public NetFunction {
 public:
+    //class is just a simbol for depicting engines values dashboard using opencv
     float operator()(float f) override {
-        if (f > 0.1)
-            return  std::sin(f);
-        else
-            return 1;
-
-
+            //this method should not be called.
+            abort();
+            return 0.0f;
     }
 };
 
