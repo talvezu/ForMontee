@@ -6,12 +6,11 @@ set(UTILS_DIRECTORY_INCLUDES "./"
                              "${CMAKE_CURRENT_SOURCE_DIR}/utils")
 
 add_subdirectory(utils)
+add_subdirectory(opencv)
 
 add_executable(${EXECUTABLE_NAME} ${APP_SOURCES} ${APP_HEADERS})
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${PROJECT_UTILS})
-
-
 
 target_link_libraries(
     ${EXECUTABLE_NAME}

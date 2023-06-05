@@ -41,6 +41,7 @@ set(PROJECT_UTILS "project_util")
 set(UNIT_TEST_NAME "unit_tests")
 set(UNIT_GTEST_NAME "unit_gtests")
 set(EXECUTABLE_NAME "main")
+set(PROJECT_MY_OPENCV "my_opencv")
 
 # CMAKE MODULES
 
@@ -53,6 +54,14 @@ include(Warnings)
 include(Tools)
 include(LTO)
 include(ConfigSafeGuards)
+include(DetectSystem)
+
+detect_system()
+if (${SYSTEM_WSL})
+    message("running on WSL")
+endif()
+
+add_git_submodule(external/opencv)
 
 add_cmake_format_target()
 add_clang_format_target()

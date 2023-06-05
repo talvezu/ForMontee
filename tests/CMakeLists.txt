@@ -10,7 +10,8 @@ if(ENABLE_TESTING)
                       "${CMAKE_CURRENT_SOURCE_DIR}/gtest_priority_queue.cpp"
                       "${CMAKE_CURRENT_SOURCE_DIR}/gtest_scheduled_task.cpp"
                       "${CMAKE_CURRENT_SOURCE_DIR}/gtest_database.cpp"
-                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_simple_boost_shared_memory.cpp")
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_simple_boost_shared_memory.cpp"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/gtest_my_opencv.cpp")
     set(GTEST_HEADERS "")
 
     add_executable(${UNIT_TEST_NAME} ${TEST_SOURCES} ${TEST_HEADERS})
@@ -21,8 +22,9 @@ if(ENABLE_TESTING)
 
     #workaround
     set(UTILS_DIRECTORY_INCLUDES "../app/utils")
-    target_include_directories(${UNIT_GTEST_NAME} PUBLIC ${GTEST_INCLUDE_DIR} ${YAML_LIBRARY_INCLUDES} ${UTILS_DIRECTORY_INCLUDES})
-    target_link_libraries(${UNIT_GTEST_NAME} PUBLIC ${LIBRARY_NAME} yaml-cpp re2 ${PROJECT_UTILS} ${YAML_LIBRARY_NAME})
+    set(OPENCV_DIRECTORY_INCLUDES "../app/opencv")
+    target_include_directories(${UNIT_GTEST_NAME} PUBLIC ${GTEST_INCLUDE_DIR} ${YAML_LIBRARY_INCLUDES} ${UTILS_DIRECTORY_INCLUDES} ${OPENCV_DIRECTORY_INCLUDES})
+    target_link_libraries(${UNIT_GTEST_NAME} PUBLIC ${LIBRARY_NAME} yaml-cpp re2 ${PROJECT_UTILS} ${YAML_LIBRARY_NAME} ${PROJECT_MY_OPENCV})
     target_link_libraries(${UNIT_GTEST_NAME} PRIVATE  GTest::gtest_main)
 
     #gtest_discover_tests(${UNIT_GTEST_NAME})
