@@ -20,3 +20,7 @@ net_action_2:
   target_motors: [5]
   times: 0
   action: bend
+
+net_action_3:
+  times: 0
+  action: dashboard

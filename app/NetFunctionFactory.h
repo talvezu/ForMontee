@@ -1,3 +1,4 @@
+#pragma once
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -49,6 +50,18 @@ public:
     }
 };
 
+class Dashboard : public NetFunction
+{
+public:
+    //class is just a simbol for depicting engines values dashboard using opencv
+    float operator()(float f) override
+    {
+        //this method should not be called.
+        abort();
+        return 0.0f;
+    }
+};
+
 class NetFunctionFactory
 {
     static std::map<std::string, std::shared_ptr<NetFunction>>
@@ -69,6 +82,11 @@ public:
             {
                 active_net_functions.emplace("rotate",
                                              std::make_shared<Rotate>());
+            }
+            else if (net_function_name == "dashboard")
+            {
+                active_net_functions.emplace("dashboard",
+                                             std::make_shared<Dashboard>());
             }
             else
             {

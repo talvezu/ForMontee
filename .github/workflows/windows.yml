@@ -10,6 +10,21 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+    - name: Install vcpkg
+      run: |
+        git clone https://github.com/Microsoft/vcpkg.git
+        cd vcpkg
+        bootstrap-vcpkg.bat
+        vcpkg integrate install
+    - name: Install gtk+-2.0.pc
+      run: |
+        vcpkg update
+        vcpkg install gtk
+        vcpkg --feature-flags=manifests,git-source install gtk
+    - name: Set up GTK environment variables
+      run: |
+        echo "::set-env name=PKG_CONFIG_PATH::$(vcpkg install-prefix)/lib/pkgconfig"
+        echo "::set-env name=PATH::$(vcpkg install-prefix)/bin;$PATH"
     - uses: actions/checkout@v2
     - name: prepare
       run: |
@@ -23,6 +38,6 @@ jobs:
     - name: testing
       run: |
         cd build
-        cd tests
+        cd bin
         cd Debug
         .\unit_tests.exe

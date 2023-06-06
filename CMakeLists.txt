@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
 # Options
 option(USE_CONAN "Whether to use conan" OFF)
@@ -41,6 +43,7 @@ set(PROJECT_UTILS "project_util")
 set(UNIT_TEST_NAME "unit_tests")
 set(UNIT_GTEST_NAME "unit_gtests")
 set(EXECUTABLE_NAME "main")
+set(PROJECT_MY_OPENCV "my_opencv")
 
 # CMAKE MODULES
 
@@ -53,6 +56,14 @@ include(Warnings)
 include(Tools)
 include(LTO)
 include(ConfigSafeGuards)
+include(DetectSystem)
+
+detect_system()
+if (${SYSTEM_WSL})
+    message("running on WSL")
+endif()
+
+add_git_submodule(external/opencv)
 
 add_cmake_format_target()
 add_clang_format_target()
