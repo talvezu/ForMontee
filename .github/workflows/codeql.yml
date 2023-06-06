@@ -37,6 +37,18 @@ jobs:
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
+    - name: Install Boost
+      run: |
+        sudo apt-get install libboost-all-dev
+    - name: Verify Boost installation
+      run: |
+        echo "Boost version:"
+        boost_version=$(dpkg -s libboost-all-dev | grep Version)
+        echo $boost_version
+        echo "Boost header files:"
+        ls /usr/include/boost
+    - name: Add boost to PATH
+      run: PATH=/usr/include:${PATH}
     - name: Checkout repository
       uses: actions/checkout@v3
 
