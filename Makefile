@@ -38,4 +38,3 @@ prepare_conan:
 backup:
 	cd ../
 	rsync -avz MenteeRoot ~/backup
-

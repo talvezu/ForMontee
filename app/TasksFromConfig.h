@@ -4,9 +4,9 @@
 void tasks_from_config_impl(workflow<float> &work_flow);
 
 template <class T>
-void tasks_from_config(workflow<T> &work_flow){
+void tasks_from_config(workflow<T> &work_flow)
+{
     tasks_from_config_impl(work_flow);
 }
 
 void join();
-
