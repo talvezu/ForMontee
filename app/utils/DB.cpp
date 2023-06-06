@@ -15,6 +15,7 @@ namespace utils
 
 // Definition of the explicit specialization
 template bool DB<uint32_t, float>::init_sm(std::string shared_mem_id);
+template void DB<uint32_t, float>::update_sm();
 template std::shared_ptr<DB<uint32_t, float>> get_db();
 
 template <class K, class V>

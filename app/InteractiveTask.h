@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PeriodicTask.h"
 #include "PriorityQ.h"
 #include "PriorityQueueElement.h"
 #include "global_settings.h"
