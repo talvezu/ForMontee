@@ -4,7 +4,7 @@ net_function_1:
   delta_in_milliseconds: 200
   values: [ 0.5, 0.4 ]
   delta_values: [-0.01, 0.02]
-  
+
 net_function_2:
   target_motors: [3]
   times: 0
@@ -16,4 +16,4 @@ net_function_2:
 #  model_type: sdf
 #  position: [ 3.0, 7.0, 0.0 ]
 #  orientation: [ 0.0, 0.0, 0 ]
- 
+

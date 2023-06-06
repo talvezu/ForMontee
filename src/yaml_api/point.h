@@ -20,43 +20,46 @@ The following Point3_\<\> aliases are available:
 
 #include <vector>
 using std::vector;
-template<typename _Tp> class Point3_
+template <typename _Tp>
+class Point3_
 {
 public:
     typedef _Tp value_type;
 
     //! default constructor
-    Point3_(){}
-    Point3_(_Tp _x, _Tp _y, _Tp _z):x(_x), y(_y), z(_z)
+    Point3_()
     {
-
     }
-    Point3_(Point3_&& pt) noexcept
+    Point3_(_Tp _x, _Tp _y, _Tp _z) : x(_x), y(_y), z(_z)
+    {
+    }
+    Point3_(Point3_ &&pt) noexcept
     {
         x = std::move(pt.x);
         y = std::move(pt.y);
         z = std::move(pt.z);
     }
-    explicit Point3_(const Point3_<_Tp>& pt)
+    explicit Point3_(const Point3_<_Tp> &pt)
     {
         x = pt.x;
         y = pt.y;
         z = pt.z;
     }
-    Point3_(const vector<_Tp>& v){
+    Point3_(const vector<_Tp> &v)
+    {
         x = v[0];
         y = v[1];
         z = v[2];
     }
 
-    Point3_& operator = (const Point3_& pt)
+    Point3_ &operator=(const Point3_ &pt)
     {
         x = pt.x;
         y = pt.y;
         return *this;
     }
 
-    Point3_& operator = (Point3_&& pt) noexcept
+    Point3_ &operator=(Point3_ &&pt) noexcept
     {
         return *this;
     }
@@ -65,17 +68,18 @@ public:
     //! conversion to cv::Vec<>
     //operator vector<_Tp>() const;
 
-    _Tp &operator [](int idx){
-        switch(idx)
+    _Tp &operator[](int idx)
+    {
+        switch (idx)
         {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            case 2:
-                return z;
-            default:
-                throw;
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            throw;
         }
     }
     //Point3_<_Tp> &operator = (Point3_ <_Tp> &rhs){
@@ -96,4 +100,3 @@ public:
 typedef Point3_<int> Point3i;
 typedef Point3_<float> Point3f;
 typedef Point3_<double> Point3d;
-

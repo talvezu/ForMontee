@@ -1,33 +1,32 @@
 #pragma once
 #include <iostream>
-#include <set>
 #include <optional>
+#include <set>
 #include <yaml-cpp/yaml.h>
 //#include "point.h" //todon convert 1d to 3d using point
 
 
 using YAML::Parser;
 
-struct netAction{
+struct netAction
+{
     std::set<uint32_t> motors; //unused
-    uint32_t times; //unused
+    uint32_t times;            //unused
     std::string action;
-    netAction(std::set<uint32_t> _motors, uint32_t _times, std::string _action):
-        motors(_motors),
-        times(_times),
-        action(_action)
+    netAction(std::set<uint32_t> _motors, uint32_t _times, std::string _action)
+        : motors(_motors), times(_times), action(_action)
     {
-
     }
 };
 
-template<class T>
-class FunctionTask{
+template <class T>
+class FunctionTask
+{
 public:
     std::string task_name;
     std::set<uint32_t> target_motors;
     uint32_t times;
-    uint32_t  delta_in_milliseconds;
+    uint32_t delta_in_milliseconds;
     std::optional<std::vector<T>> values;
     std::optional<std::vector<T>> delta_values;
     bool is_infinite;
@@ -38,42 +37,45 @@ public:
                  std::optional<std::vector<T>> _values,
                  std::optional<std::vector<T>> _delta_values);
 
-    friend std::ostream & operator<<(std::ostream& os, FunctionTask& obj){
-        std::cout<<"task_name: "<<obj.task_name<<"\n";
-        std::cout<<"motors: ";
-        for (auto motor: obj.target_motors)
+    friend std::ostream &operator<<(std::ostream &os, FunctionTask &obj)
+    {
+        std::cout << "task_name: " << obj.task_name << "\n";
+        std::cout << "motors: ";
+        for (auto motor : obj.target_motors)
         {
-            std::cout<<motor<<" ";
+            std::cout << motor << " ";
         }
-        std::cout<<"\n";
-        std::cout<<"times: "<<obj.times<<"\n";
-        std::cout<<"delta_in_milliseconds: "<<obj.delta_in_milliseconds<<"\n";
+        std::cout << "\n";
+        std::cout << "times: " << obj.times << "\n";
+        std::cout << "delta_in_milliseconds: " << obj.delta_in_milliseconds
+                  << "\n";
         if (obj.values.has_value())
         {
-            std::cout<<"values: ";
-            for (auto value: obj.values.value())
+            std::cout << "values: ";
+            for (auto value : obj.values.value())
             {
-                std::cout<<value<<" ";
+                std::cout << value << " ";
             }
         }
-        std::cout<<"\n";
+        std::cout << "\n";
         if (obj.delta_values.has_value())
         {
-            std::cout<<"delta_values: ";
-            for (auto value: obj.delta_values.value())
+            std::cout << "delta_values: ";
+            for (auto value : obj.delta_values.value())
             {
-                std::cout<<value<<" ";
+                std::cout << value << " ";
             }
         }
-        std::cout<<"\n";
-        std::cout<<"\n";
+        std::cout << "\n";
+        std::cout << "\n";
         return os;
     }
 };
 
 
 template <class T>
-class workflow{
+class workflow
+{
     std::string filename;
     std::set<uint32_t> gp_motors;
     std::set<uint32_t> net_func_motors;
@@ -83,8 +85,9 @@ class workflow{
     uint16_t task_count;
 
     void constract_net_action(const std::string key, const YAML::Node &attr);
+
 public:
-    workflow(std::string _filename):filename(_filename)
+    workflow(std::string _filename) : filename(_filename)
     {
         task_count = 0;
     }
@@ -94,11 +97,13 @@ public:
 
     std::shared_ptr<FunctionTask<T>> get_task_by_name(std::string name);
     uint8_t get_motors_count();
-    const auto &get_tasks(){
+    const auto &get_tasks()
+    {
         return tasks;
     }
 
-    const auto &get_net_actions(){
+    const auto &get_net_actions()
+    {
         return net_actions;
     }
 
@@ -116,11 +121,12 @@ public:
     {
         std::set<uint32_t> union_set;
 
-        std::set_union(gp_motors.begin(), gp_motors.end(), net_func_motors.begin(), net_func_motors.end(),
-                   std::inserter(union_set, union_set.begin()));
+        std::set_union(gp_motors.begin(),
+                       gp_motors.end(),
+                       net_func_motors.begin(),
+                       net_func_motors.end(),
+                       std::inserter(union_set, union_set.begin()));
 
         return union_set;
     }
-
 };
-

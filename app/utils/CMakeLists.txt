@@ -73,6 +73,3 @@ add_clang_tidy_msvc_to_target(${PROJECT_UTILS})
 
 pybind11_add_module(python_api_shared_data "${CMAKE_CURRENT_SOURCE_DIR}/DB.cpp"
                                            "${CMAKE_CURRENT_SOURCE_DIR}/SharedMemoryWrapper.cpp")
-
-
-

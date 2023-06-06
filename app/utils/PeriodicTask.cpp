@@ -1,3 +1,3 @@
 #include "PeriodicTask.h"
 
-constexpr bool debug{ true };
+constexpr bool debug{true};
