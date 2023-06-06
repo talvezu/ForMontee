@@ -1,12 +1,12 @@
 #define CATCH_CONFIG_MAIN
-#include <gtest/gtest.h>
 #include "yaml_api.h"
+#include <gtest/gtest.h>
 
 TEST(YamlTests, YamlPrintFromFile)
 {
     workflow<float> f("text.yaml");
     f.init();
-    ASSERT_EQ (static_cast<int>(f.load_work()), 1);
+    ASSERT_EQ(static_cast<int>(f.load_work()), 1);
 }
 /*
 int main(int argc, char **argv)
