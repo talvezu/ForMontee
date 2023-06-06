@@ -13,4 +13,3 @@ function(detect_system)
     set(SYSTEM_WSL "false" PARENT_SCOPE)
     endif()
 endfunction(detect_system)
-

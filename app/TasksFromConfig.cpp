@@ -1,12 +1,12 @@
 #include "TasksFromConfig.h"
 #include "DB.h"
+#include "DashboardDisplay.h"
 #include "InteractiveTask.h"
 #include "NetFunctionFactory.h"
 #include "PeriodicTask.h"
 #include "PriorityQ.h"
 #include "PriorityQueueElement.h"
 #include "global_settings.h"
-#include "DashboardDisplay.h"
 #include <atomic>
 #include <memory>
 #include <random>
@@ -36,14 +36,14 @@ float execute_net_function(
     /*to do improve, no point in searching over again*/
     for (auto net_func : net_functions)
     {
-        if ( "dashboard" == net_func.first )
+        if ("dashboard" == net_func.first)
         {
             my_opencv::DashBoard dashb;
             dashb.draw_dashboard();
         }
         else
         {
-            for (auto motor: net_func.second->get_motors())
+            for (auto motor : net_func.second->get_motors())
             {
                 if (motor == engine)
                 {

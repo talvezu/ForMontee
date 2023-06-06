@@ -50,13 +50,15 @@ public:
     }
 };
 
-class Dashboard : public NetFunction {
+class Dashboard : public NetFunction
+{
 public:
     //class is just a simbol for depicting engines values dashboard using opencv
-    float operator()(float f) override {
-            //this method should not be called.
-            abort();
-            return 0.0f;
+    float operator()(float f) override
+    {
+        //this method should not be called.
+        abort();
+        return 0.0f;
     }
 };
 
@@ -64,6 +66,7 @@ class NetFunctionFactory
 {
     static std::map<std::string, std::shared_ptr<NetFunction>>
         active_net_functions;
+
 public:
     static std::shared_ptr<NetFunction> supportNetFunction(
         const std::string &net_function_name)
@@ -82,10 +85,10 @@ public:
             }
             else if (net_function_name == "dashboard")
             {
-                active_net_functions.emplace("dashboard", 
+                active_net_functions.emplace("dashboard",
                                              std::make_shared<Dashboard>());
             }
-            else 
+            else
             {
                 return nullptr;
             }

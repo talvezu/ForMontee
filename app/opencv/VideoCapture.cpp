@@ -1,9 +1,11 @@
-#include <opencv2/opencv.hpp>
 #include "VideoCapture.h"
 #include "../utils/global_settings.h"
+#include <opencv2/opencv.hpp>
 
-namespace my_opencv{
-class VideoCaptureInternals{
+namespace my_opencv
+{
+class VideoCaptureInternals
+{
 public:
     std::string outfile;
     std::shared_ptr<cv::VideoCapture> cap;
@@ -13,17 +15,23 @@ public:
     cv::Mat curr_frame;
     bool initialized;
 
-    bool init(std::string _outfile){
+    bool init(std::string _outfile)
+    {
         outfile = _outfile;
         cap = std::make_shared<cv::VideoCapture>(0);
-        if (!cap->isOpened()) {
+        if (!cap->isOpened())
+        {
             std::cout << "Failed to open the camera!" << std::endl;
             return false;
         }
         // Get the default camera's resolution
         frameWidth = static_cast<int>(cap->get(cv::CAP_PROP_FRAME_WIDTH));
         frameHeight = static_cast<int>(cap->get(cv::CAP_PROP_FRAME_HEIGHT));
-        writer = std::make_shared<cv::VideoWriter>(outfile, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 25.0, cv::Size(frameWidth, frameHeight));
+        writer = std::make_shared<cv::VideoWriter>(
+            outfile,
+            cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+            25.0,
+            cv::Size(frameWidth, frameHeight));
 
         return true;
     }
@@ -36,24 +44,27 @@ public:
         // Close all OpenCV windows
         //cv::destroyAllWindows();
     }
-    VideoCaptureInternals(){
+    VideoCaptureInternals()
+    {
         initialized = false;
     }
 };
 
-VideoCapture::VideoCapture(std::string _outfile):outfile(_outfile)
+VideoCapture::VideoCapture(std::string _outfile) : outfile(_outfile)
 {
     video_capture_sptr = std::make_shared<VideoCaptureInternals>();
 }
 
-int VideoCapture::capture_video_from_camera(std::optional<tp> timeout) {
+int VideoCapture::capture_video_from_camera(std::optional<tp> timeout)
+{
 
     // Open the default camera
     if (!video_capture_sptr->initialized && !video_capture_sptr->init(outfile))
         return -1;
 
     auto cap = *video_capture_sptr->cap;
-    if (!cap.isOpened()) {
+    if (!cap.isOpened())
+    {
         std::cout << "Failed to open the camera!" << std::endl;
         return -1;
     }
@@ -61,7 +72,8 @@ int VideoCapture::capture_video_from_camera(std::optional<tp> timeout) {
     // Create a MPEG video writer object 25fps
     auto writer = *video_capture_sptr->writer;
 
-    if (!writer.isOpened()) {
+    if (!writer.isOpened())
+    {
         std::cout << "Failed to create the output video file!" << std::endl;
         return -1;
     }
@@ -69,10 +81,11 @@ int VideoCapture::capture_video_from_camera(std::optional<tp> timeout) {
     // Start capturing and recording
     auto &frame = video_capture_sptr->curr_frame;
 
-    while (true) {
+    while (true)
+    {
         if (timeout.has_value())
         {
-            if(timeout.value() > clock::now())
+            if (timeout.value() > clock::now())
                 break;
         }
         // Read a frame from the camera
@@ -97,13 +110,15 @@ int VideoCapture::capture_video_from_camera(std::optional<tp> timeout) {
     return 0;
 }
 
-bool VideoCapture::capture_single_frame_from_camera() {
+bool VideoCapture::capture_single_frame_from_camera()
+{
     // Open the default camera
     if (!video_capture_sptr->initialized && !video_capture_sptr->init(outfile))
         return false;
 
     auto &cap = *video_capture_sptr->cap;
-    if (!cap.isOpened()) {
+    if (!cap.isOpened())
+    {
         std::cout << "Failed to open the camera!" << std::endl;
         return false;
     }
@@ -116,7 +131,8 @@ bool VideoCapture::capture_single_frame_from_camera() {
     // Create a MPEG video writer object 25fps
     auto &writer = *video_capture_sptr->writer;
 
-    if (!writer.isOpened()) {
+    if (!writer.isOpened())
+    {
         std::cout << "Failed to create the output video file!" << std::endl;
         return -1;
     }

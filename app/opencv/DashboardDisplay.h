@@ -1,10 +1,9 @@
 #pragma once
 
-#include <string>
-#include <memory>
 #include <chrono>
+#include <memory>
 #include <optional>
-
+#include <string>
 
 
 namespace my_opencv
@@ -12,12 +11,14 @@ namespace my_opencv
 
 class DrawDashBoardInternals;
 
-class DashBoard{
+class DashBoard
+{
 protected:
     std::shared_ptr<DrawDashBoardInternals> draw_dashboard_internal_sptr;
+
 public:
     void draw_dashboard();
     DashBoard() noexcept;
 };
 
-}; //namespace opencv
+}; // namespace my_opencv

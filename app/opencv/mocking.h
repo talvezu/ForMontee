@@ -1,19 +1,18 @@
+#include "DashboardDisplay.h"
 #include <map>
 #include <string>
-#include "DashboardDisplay.h"
 
 //mock
 namespace my_opencv
 {
 
-class DashBoard_mock: public DashBoard
+class DashBoard_mock : public DashBoard
 
 {
 public:
-
     std::map<std::string, std::map<uint32_t, float>> data;
-    DashBoard_mock(){
-
+    DashBoard_mock()
+    {
     }
     void init()
     {
@@ -24,6 +23,5 @@ public:
 
 
     void draw_dashboard();
-
 };
-}//namespace my_opencv
+} //namespace my_opencv
