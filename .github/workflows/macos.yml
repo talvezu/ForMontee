@@ -23,5 +23,5 @@ jobs:
     - name: testing
       run: |
         cd build
-        cd tests
+        cd bin
         ./unit_tests
