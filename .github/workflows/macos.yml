@@ -22,9 +22,9 @@ jobs:
         brew update --preinstall
     - name: Install GTK
       run: brew install gtk4
-        #- name: Set up GTK environment variables
-        #run: |
-        #echo "PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/opt/homebrew/lib/pkgconfig" >> "$GITHUB_ENV"
+    - name: Set up GTK environment variables
+      run: |
+        echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/opt/homebrew/lib/pkgconfig" >> "$GITHUB_ENV"
     - uses: actions/checkout@v2
     - name: prepare
       run: |
