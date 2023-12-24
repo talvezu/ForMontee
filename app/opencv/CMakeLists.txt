@@ -17,7 +17,11 @@ find_package(PkgConfig REQUIRED)
 #locate and provide the necessary include directories
 #${GTK2_INCLUDE_DIRS} and ${GTK2_LIBRARIES which for some reason were not required by
 #target_include_directories and target_link_libraries
-pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+if(WIN32)
+elseif(APPLE)
+else()
+    pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+endif()
 
 target_link_libraries(${PROJECT_MY_OPENCV} PUBLIC Threads::Threads opencv_core opencv_highgui)
 
