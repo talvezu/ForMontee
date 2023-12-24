@@ -22,7 +22,7 @@ jobs:
         brew update --preinstall
     - name: Install GTK
       run: |
-        brew install gtk+2
+        brew install gtk+
         brew install gtk4
     - name: Set up GTK environment variables
       run: |
