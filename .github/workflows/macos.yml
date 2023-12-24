@@ -21,7 +21,9 @@ jobs:
         rm -f /usr/local/bin/python3*
         brew update --preinstall
     - name: Install GTK
-      run: brew install gtk4
+      run: |
+        brew install gtk+2
+        brew install gtk4
     - name: Set up GTK environment variables
       run: |
         echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/opt/homebrew/lib/pkgconfig" >> "$GITHUB_ENV"
