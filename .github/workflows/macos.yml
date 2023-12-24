@@ -25,6 +25,9 @@ jobs:
     - name: Set up GTK environment variables
       run: |
         echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/opt/homebrew/lib/pkgconfig" >> "$GITHUB_ENV"
+    - name: Check and install setuptools for distutils
+      run: |
+        python -m pip install setuptools
     - uses: actions/checkout@v2
     - name: prepare
       run: |
