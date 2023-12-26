@@ -21,10 +21,6 @@ jobs:
         vcpkg update
         vcpkg install gtk
         vcpkg --feature-flags=manifests,git-source install gtk
-    - name: Set up GTK environment variables
-      run: |
-        echo "PKG_CONFIG_PATH=$(vcpkg root)/installed/x64-windows/debug/lib/pkgconfig" >> $GITHUB_ENV
-        echo "PATH=$(vcpkg root)/installed/x64-windows/debug/bin;$PATH" >> $GITHUB_ENV
     - uses: actions/checkout@v2
     - name: prepare
       run: |
