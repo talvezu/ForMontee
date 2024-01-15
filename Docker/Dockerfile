@@ -20,6 +20,7 @@ apt-get install -y cmake \
                    python3-dev \
                    libgtk2.0-dev \
                    libboost-all-dev \
+                   libx11-dev \
                    pkg-config && \
 git clone --depth=1 https://github.com/talvezu/ForMontee.git ${APP_ROOT} && \
 mkdir ${APP_ROOT}/build &&\
