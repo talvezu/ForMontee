@@ -26,5 +26,6 @@ mkdir ${APP_ROOT}/build &&\
 sed -i 's/GIT_TAG v2.7.1/GIT_TAG 787d2c88cafa4d07fb38c9519c485a86323cfcf4 # v2.7.1/g' ${APP_ROOT}/app/utils/CMakeLists.txt
 
 WORKDIR ${BUILD_ROOT}
-RUN cmake ../ #&& \
-#cmake --build .
+RUN cmake .. && \
+cmake --build . --target unit_gtests && \
+cmake --build . --target main -j$(nproc)
