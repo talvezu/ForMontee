@@ -9,7 +9,10 @@ ENV DIRNAME=application
 ENV WORKDIR=${DIRPATH}${DIRNAME}
 ENV APP_ROOT=${WORKDIR}
 ENV BUILD_ROOT=${APP_ROOT}/build
+# Enable X11 forwarding
+ENV DISPLAY=:0
 
+RUN export NUM_CORES=$(echo "$(nproc))")
 RUN apt-get update && \
 apt-get install -y cmake \
                    git \

@@ -5,7 +5,9 @@ docker_build:
 	docker build -t for_montee .
 
 docker_run:
-	docker run -v /home/nlevy/talvezu/ForMontee/Docker:/home/external -it for_montee /bin/bash
+	docker run  -v /tmp/.X11-unix:/tmp/.X11-unix \
+		        -v /home/nlevy/talvezu/ForMontee/Docker:/home/external \
+				-it for_montee /bin/bash
 
 docker_reattach:
 ifdef PID
