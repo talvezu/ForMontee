@@ -14,6 +14,5 @@ active_running=$(systemctl status docker 2>&1 | grep -Po "active \(running\)")
 if [[ ${active_running} = "active (running)" ]]; then
     printf "docker server is ${active_running}\n"
 else
-    printf "error occured during docker setup please check."    
+    printf "error occured during docker setup please check."
 fi
-
